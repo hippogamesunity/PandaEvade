@@ -4,8 +4,8 @@ namespace Assets.Scripts.Common.Tweens
 {
     public class ScaleSpring : TweenBase
     {
-        public float From;
-        public float To;
+        public Vector3 From;
+        public Vector3 To;
         public float Dumping;
 
         private float _amplitude = 1;
@@ -20,7 +20,9 @@ namespace Assets.Scripts.Common.Tweens
         {
             _amplitude = Mathf.Max(0, _amplitude - Dumping * Time.deltaTime);
 
-            transform.localScale = _scale * (From + (To - From) * Sin() * _amplitude);
+            var t = From + (To - From) * Sin() * _amplitude;
+
+            transform.localScale = new Vector3(_scale.x * t.x, _scale.y * t.y, _scale.z * t.z);
      
             if (_amplitude <= 0)
             {
