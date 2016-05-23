@@ -17,10 +17,12 @@ namespace Assets.Scripts
         
         private int _evasion;
         private int _hit;
-
+        private int _score;
+        private int _hearts;
+        
         public void Start()
         {
-            Animator.Play(StandAnimation.name);
+            Restart();
         }
 
         public void Update()
@@ -63,16 +65,17 @@ namespace Assets.Scripts
 
             if (Math.Sign(_evasion) == sign)
             {
-                Engine.AddScore(1);
+                Engine.UpdateScore(++_score);
             }
             else
             {
-                Engine.AddScore(-5);
+                Engine.UpdateHearts(--_hearts);
+
                 collision2D.rigidbody.velocity = new Vector2(10 * -sign, -10);
                 _hit = -sign;
                 SetReflection(_hit);
 
-                if (Engine.GetScore() > 0)
+                if (_hearts >= 0)
                 {
                     Animator.Play(HitAnimation.name);
                     TaskScheduler.Kill(Id);
@@ -82,7 +85,7 @@ namespace Assets.Scripts
                 {
                     Animator.Play(FallAnimation.name);
                     TaskScheduler.Kill(Id);
-                    TaskScheduler.CreateTask(Stand, Id, 2);
+                    TaskScheduler.CreateTask(Restart, Id, 2);
                     Beads.Fall();
                 }
             }
@@ -93,6 +96,13 @@ namespace Assets.Scripts
             _evasion = _hit = 0;
             SetReflection(1);
             Animator.Play(StandAnimation.name);
+        }
+
+        private void Restart()
+        {
+            Engine.UpdateScore(_score = 0);
+            Engine.UpdateHearts(_hearts = 3);
+            Stand();
         }
 
         private void Evade()
