@@ -121,11 +121,11 @@ namespace Assets.Scripts.Common
 
                 if (!Social.localUser.authenticated)
                 {
-                    //var config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder().Build();
+                    var config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder().Build();
 
-                    //GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
-                    //GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = false;
-                    //GooglePlayGames.PlayGamesPlatform.Activate();
+                    GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
+                    GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = false;
+                    GooglePlayGames.PlayGamesPlatform.Activate();
                 }
 
                 #endif

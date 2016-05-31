@@ -20,11 +20,6 @@ namespace Assets.Scripts
         private int _score;
         private int _hearts;
         
-        public void Start()
-        {
-            Restart();
-        }
-
         public void Update()
         {
             if (_evasion != 0 || _hit != 0) return;
@@ -37,6 +32,13 @@ namespace Assets.Scripts
             {
                 EvadeRight();
             }
+        }
+
+        public void Reset()
+        {
+            Engine.UpdateScore(_score = 0);
+            Engine.UpdateHearts(_hearts = 3);
+            Stand();
         }
 
         public void EvadeLeft()
@@ -85,7 +87,7 @@ namespace Assets.Scripts
                 {
                     Animator.Play(FallAnimation.name);
                     TaskScheduler.Kill(Id);
-                    TaskScheduler.CreateTask(Restart, Id, 2);
+                    TaskScheduler.CreateTask(() => Engine.Stop(_score), Id, 2);
                     Beads.Fall();
                 }
             }
@@ -96,13 +98,6 @@ namespace Assets.Scripts
             _evasion = _hit = 0;
             SetReflection(1);
             Animator.Play(StandAnimation.name);
-        }
-
-        private void Restart()
-        {
-            Engine.UpdateScore(_score = 0);
-            Engine.UpdateHearts(_hearts = 3);
-            Stand();
         }
 
         private void Evade()

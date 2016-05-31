@@ -13,7 +13,6 @@ namespace Assets.Scripts.Common
 
         private bool _expand;
         private Vector2 _scrollPos;
-        private int _count;
         private readonly StringBuilder _log = new StringBuilder();
         private readonly StringBuilder _fullLog = new StringBuilder();
         private bool _subscribed;

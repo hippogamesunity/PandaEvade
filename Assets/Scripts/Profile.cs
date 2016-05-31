@@ -1,0 +1,65 @@
+﻿using Assets.Scripts.Common;
+using SimpleJSON;
+using UnityEngine;
+
+namespace Assets.Scripts
+{
+    public class Profile
+    {
+        public ProtectedValue BestScore;
+
+        private static Profile _instance;
+        private const string ProfileKey = "T";
+
+        private Profile()
+        {
+        }
+
+        public static Profile Instance
+        {
+            get { return _instance ?? Load(); }
+        }
+
+        public static Profile Load()
+        {
+            _instance = PlayerPrefs.HasKey(ProfileKey) ? FromJson(JSONNode.LoadFromCompressedBase64(PlayerPrefs.GetString(ProfileKey))) : DefaultProfile;
+
+            return _instance;
+        }
+
+        private static Profile DefaultProfile
+        {
+            get
+            {
+                return new Profile
+                {
+                    BestScore = 0
+                };
+            }
+        }
+
+        public void Save()
+        {
+            PlayerPrefs.SetString(ProfileKey, ToJson().SaveToCompressedBase64());
+            PlayerPrefs.Save();
+        }
+
+        private JSONNode ToJson()
+        {
+            return new JSONClass
+            {
+                { "BestScore", BestScore.ToJson() }
+            };
+        }
+
+        private static Profile FromJson(JSONNode json)
+        {
+            var profile = new Profile
+            {
+                BestScore = ProtectedValue.FromJson(json["BestScore"])
+            };
+
+            return profile;
+        }
+    }
+}

@@ -44,7 +44,7 @@ namespace Assets.Scripts.Common
 
         public void OnDragOut()
         {
-            if (Pressed && !GetComponent<Collider>().bounds.Contains(Camera.main.ScreenToWorldPoint(Input.mousePosition)))
+            if (Pressed && !GetComponent<Collider2D>().bounds.Contains(Camera.main.ScreenToWorldPoint(Input.mousePosition)))
             {
                 Tween(false);
                 Pressed = false;
