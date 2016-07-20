@@ -7,6 +7,8 @@ namespace Assets.Scripts
     public class Panda : Script
     {
         public Transform Stage;
+        public Collider2D[] Colliders;
+        public UI UI;
         public Engine Engine;
         public Beads Beads;
         public Animator Animator;
@@ -17,7 +19,7 @@ namespace Assets.Scripts
         
         private int _evasion;
         private int _hit;
-
+        
         public int Score { get; private set; }
         public int Hearts { get; private set; }
         
@@ -37,8 +39,19 @@ namespace Assets.Scripts
 
         public void Reset()
         {
-            Engine.UpdateScore(Score = 0);
-            Engine.UpdateHearts(Hearts = 3);
+            UI.UpdateScore(Score = 0);
+            UI.UpdateHearts(Hearts = 3);
+            Stand();
+
+            foreach (var c in Colliders)
+            {
+                c.enabled = true;
+            }
+        }
+
+        public void Continue()
+        {
+            UI.UpdateHearts(Hearts = 0);
             Stand();
         }
 
@@ -60,37 +73,49 @@ namespace Assets.Scripts
             }
         }
 
-        public void OnCollisionEnter2D(Collision2D collision2D)
+        public void OnTriggerEnter2D(Collider2D c)
         {
             if (_hit != 0) return;
 
-            var sign = Math.Sign(collision2D.rigidbody.velocity.x);
+            var sign = Math.Sign(c.GetComponent<Rigidbody2D>().velocity.x);
 
             if (Math.Sign(_evasion) == sign)
             {
-                Engine.UpdateScore(++Score);
+                UI.UpdateScore(++Score);
             }
             else
             {
-                Engine.UpdateHearts(--Hearts);
-                collision2D.gameObject.GetComponent<Ball>().Recoil(-sign);
+                UI.UpdateHearts(--Hearts);
+                c.gameObject.GetComponent<Ball>().Recoil(-sign);
                 _hit = -sign;
                 SetReflection(_hit);
 
                 if (Hearts >= 0)
                 {
-                    Animator.Play(HitAnimation.name);
                     TaskScheduler.Kill(Id);
+                    Animator.Play(HitAnimation.name);
                     TaskScheduler.CreateTask(Stand, Id, HitAnimation.length);
                 }
                 else
                 {
-                    Animator.Play(FallAnimation.name);
                     TaskScheduler.Kill(Id);
-                    TaskScheduler.CreateTask(() => Engine.Stop(Score), Id, 2);
+                    Animator.Play(FallAnimation.name);
                     Beads.Fall();
+                    TaskScheduler.CreateTask(() => Engine.Stop(Score), Id, 2);
                 }
             }
+        }
+
+        public void Fall()
+        {
+            foreach (var c in Colliders)
+            {
+                c.enabled = false;
+            }
+
+            TaskScheduler.Kill(Id);
+            Animator.Play(FallAnimation.name);
+            Beads.Fall();
         }
 
         private void Stand()
@@ -102,6 +127,8 @@ namespace Assets.Scripts
 
         private void Evade()
         {
+            if (!Colliders[0].enabled) return;
+
             SetReflection(-_evasion);
             Animator.Play(EvadeAnimation.name);
             TaskScheduler.CreateTask(Stand, Id, EvadeAnimation.length);

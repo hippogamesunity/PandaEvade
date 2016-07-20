@@ -25,43 +25,67 @@ namespace Assets.Scripts.Common
         public Color ColorUp = Color.white;
         public Color ColorDisabled = Color.white;
         public Texture TextureDisabled;
+        public string SpriteEnabled;
         public string SpriteDisabled;
         public AnimationCurve AnimationCurve = new AnimationCurve(new Keyframe(0, 0, 0, 1), new Keyframe(1, 1, 1, 0));
 
         [Header("Tap Delay")]
-        public float TapTimeout = 0.5f;
+        public float TapTimeout = 0.25f;
         public bool Shared = true;
 
-        public event Action OnDown = () => {};
-        public event Action OnUp = () => {};
+        public event Action OnDown = () => { };
+        public event Action OnUp = () => { };
+        public event Action OnCancel = () => { };
 
         public bool Pressed { get; private set; }
 
-        private string _sprite;
         private Texture _texture;
         protected float TapTime;
         protected static float TapTimeShared;
 
+        private Collider2D _collider;
+
+        public Collider2D Collider
+        {
+            get { return _collider ?? (_collider = GetComponent<Collider2D>()); }
+        }
+
+        private UISprite _sprite;
+
+        public UISprite UISprite
+        {
+            get { return _sprite ?? (_sprite = GetComponent<UISprite>()); }
+        }
+
+        public void Awake()
+        {
+            if (string.IsNullOrEmpty(SpriteEnabled) && UISprite != null)
+            {
+                SpriteEnabled = UISprite.spriteName;
+            }
+        }
+
         public void OnDragOut()
         {
-            if (Pressed && !GetComponent<Collider2D>().bounds.Contains(Camera.main.ScreenToWorldPoint(Input.mousePosition)))
+            if (Pressed)
             {
                 Tween(false);
                 Pressed = false;
+                OnCancel();
             }
         }
 
         public bool Enabled
         {
-            get { return GetComponent<Collider>().enabled; }
+            get { return Collider.enabled; }
             set { Enable(value, value ? TweenTimeUp : TweenTimeDown); }
         }
 
-        public void Enable(bool value, float duration)
+        public virtual void Enable(bool value, float duration)
         {
             if (Enabled == value) return;
 
-            GetComponent<Collider>().enabled = value;
+            Collider.enabled = value;
 
             if (duration > 0)
             {
@@ -86,12 +110,12 @@ namespace Assets.Scripts.Common
 
             if (!string.IsNullOrEmpty(SpriteDisabled))
             {
-                if (_sprite == null)
+                if (string.IsNullOrEmpty(SpriteEnabled))
                 {
-                    _sprite = GetComponent<UISprite>().spriteName;
+                    SpriteEnabled = UISprite.spriteName;
                 }
 
-                GetComponent<UISprite>().spriteName = value ? _sprite : SpriteDisabled;
+                UISprite.spriteName = value ? SpriteEnabled : SpriteDisabled;
             }
         }
 

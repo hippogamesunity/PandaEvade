@@ -14,9 +14,10 @@ namespace Assets.Scripts
             transform.localScale = new Vector2(1, 1);
             GetComponent<Rigidbody2D>().AddForce(new Vector2(2000 * (side == 0 ? 1 : -1), Random.Range(0, 300)));
             GetComponent<Rigidbody2D>().AddTorque(Torque);
+            gameObject.layer = LayerMask.NameToLayer(side == 1 ? "CollisionR" : "CollisionL");
         }
 
-        public void OnCollisionEnter2D(Collision2D collision2D)
+        public void OnTriggerEnter2D(Collider2D c)
         {
             Destroy(GetComponent<Collider2D>());
         }

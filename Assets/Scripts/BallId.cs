@@ -2,9 +2,19 @@
 {
     public enum BallId
     {
-        TennisBall,
+        Banana,
+        Beach,
         Boomerang,
-        FootballBall,
-        FootballShoe
+        Bottle,
+        Cactus,
+        Flowerpot,
+        Football,
+        Grenade,
+        Pikachu,
+        Pokemon,
+        Rugby,
+        Shoe,
+        Tennis,
+        Tomato
     }
 }

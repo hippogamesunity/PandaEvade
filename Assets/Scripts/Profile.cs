@@ -7,6 +7,7 @@ namespace Assets.Scripts
     public class Profile
     {
         public ProtectedValue BestScore;
+        public ProtectedValue Sound;
 
         private static Profile _instance;
         private const string ProfileKey = "T";
@@ -33,7 +34,8 @@ namespace Assets.Scripts
             {
                 return new Profile
                 {
-                    BestScore = 0
+                    BestScore = 0,
+                    Sound = true
                 };
             }
         }
@@ -48,7 +50,8 @@ namespace Assets.Scripts
         {
             return new JSONClass
             {
-                { "BestScore", BestScore.ToJson() }
+                { "BestScore", BestScore.ToJson() },
+                { "Sound", Sound.ToJson() }
             };
         }
 
@@ -56,7 +59,8 @@ namespace Assets.Scripts
         {
             var profile = new Profile
             {
-                BestScore = ProtectedValue.FromJson(json["BestScore"])
+                BestScore = ProtectedValue.FromJson(json["BestScore"]),
+                Sound = ProtectedValue.FromJson(json["Sound"])
             };
 
             return profile;

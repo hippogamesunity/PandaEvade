@@ -1,0 +1,424 @@
+fileFormatVersion: 2
+guid: 28d1b6f5a8223c844a1d6bfd9f40a8f6
+timeCreated: 1469044918
+licenseType: Pro
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Beach
+    21300002: Football
+    21300004: Rugby
+    21300006: Tennis
+    21300008: Pokemon
+    21300010: Tomato
+    21300012: Grenade
+    21300014: Boomerang
+    21300016: Shoe
+    21300018: Bottle
+    21300020: Cactus
+    21300022: Flowerpot
+    21300024: Boomerang
+    21300026: Pikachu
+    21300028: Banana
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Beach
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 743
+        width: 269
+        height: 269
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 128.5, y: -53.5}
+        - {x: 134.5, y: -28.5}
+        - {x: 134.5, y: 32.5}
+        - {x: 127.5, y: 53.5}
+        - {x: 113.5, y: 78.5}
+        - {x: 94.5, y: 100.5}
+        - {x: 72.5, y: 117.5}
+        - {x: 41.5, y: 133.5}
+        - {x: 34.5, y: 134.5}
+        - {x: -32.5, y: 134.5}
+        - {x: -66.5, y: 122.5}
+        - {x: -100.5, y: 99.5}
+        - {x: -129.5, y: 52.5}
+        - {x: -134.5, y: 30.5}
+        - {x: -134.5, y: -36.5}
+        - {x: -118.5, y: -74.5}
+        - {x: -105.5, y: -89.5}
+        - {x: -71.5, y: -119.5}
+        - {x: -41.5, y: -134.5}
+        - {x: 31.5, y: -134.5}
+        - {x: 41.5, y: -131.5}
+        - {x: 73.5, y: -118.5}
+        - {x: 102.5, y: -95.5}
+    - name: Football
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 750
+        width: 255
+        height: 255
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 127.5, y: -36.5}
+        - {x: 127.5, y: 35.5}
+        - {x: 113.5, y: 72.5}
+        - {x: 73.5, y: 111.5}
+        - {x: 49.5, y: 122.5}
+        - {x: 32.5, y: 127.5}
+        - {x: -40.5, y: 127.5}
+        - {x: -85.5, y: 103.5}
+        - {x: -110.5, y: 72.5}
+        - {x: -119.5, y: 53.5}
+        - {x: -127.5, y: 36.5}
+        - {x: -127.5, y: -36.5}
+        - {x: -112.5, y: -73.5}
+        - {x: -85.5, y: -102.5}
+        - {x: -49.5, y: -123.5}
+        - {x: -35.5, y: -127.5}
+        - {x: 38.5, y: -127.5}
+        - {x: 68.5, y: -114.5}
+        - {x: 100.5, y: -85.5}
+        - {x: 113.5, y: -71.5}
+    - name: Rugby
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 786
+        width: 302
+        height: 184
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 151, y: 25}
+        - {x: 147, y: 33}
+        - {x: 83, y: 84}
+        - {x: 44, y: 92}
+        - {x: -30, y: 92}
+        - {x: -73, y: 82}
+        - {x: -128, y: 49}
+        - {x: -150, y: 20}
+        - {x: -151, y: 15}
+        - {x: -151, y: -17}
+        - {x: -113, y: -62}
+        - {x: -55, y: -91}
+        - {x: -40, y: -92}
+        - {x: 49, y: -92}
+        - {x: 88, y: -78}
+        - {x: 147, y: -38}
+        - {x: 151, y: -23}
+    - name: Grenade
+      rect:
+        serializedVersion: 2
+        x: 872
+        y: 813
+        width: 139
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -53.5, y: 78.5}
+        - {x: -69.5, y: 52.5}
+        - {x: -69.5, y: -57.5}
+        - {x: -58.5, y: -78.5}
+        - {x: 69.5, y: -78.5}
+        - {x: 69.5, y: 77.5}
+        - {x: 50.5, y: 78.5}
+    - name: Tennis
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 572
+        width: 144
+        height: 145
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 72, y: 72.5}
+        - {x: -62, y: 72.5}
+        - {x: -72, y: 51.5}
+        - {x: -72, y: -31.5}
+        - {x: -67, y: -54.5}
+        - {x: -31, y: -72.5}
+        - {x: 46, y: -72.5}
+        - {x: 59, y: -70.5}
+        - {x: 72, y: -32.5}
+    - name: Tomato
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 578
+        width: 168
+        height: 154
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 77}
+        - {x: -56, y: 47}
+        - {x: -78, y: 30}
+        - {x: -81, y: 20}
+        - {x: -84, y: 5}
+        - {x: -84, y: -27}
+        - {x: -82, y: -36}
+        - {x: -80, y: -42}
+        - {x: -69, y: -77}
+        - {x: 65, y: -77}
+        - {x: 84, y: -72}
+        - {x: 84, y: 39}
+        - {x: 48, y: 77}
+    - name: Pokemon
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 576
+        width: 144
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -58, y: 74}
+        - {x: -72, y: 51}
+        - {x: -72, y: -65}
+        - {x: -57, y: -74}
+        - {x: 50, y: -74}
+        - {x: 53, y: -73}
+        - {x: 72, y: -30}
+        - {x: 72, y: 45}
+        - {x: 44, y: 74}
+    - name: Shoe
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 578
+        width: 305
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 152.5, y: 52.5}
+        - {x: 119.5, y: 69.5}
+        - {x: 84.5, y: 80.5}
+        - {x: 32.5, y: 80.5}
+        - {x: -23.5, y: 61.5}
+        - {x: -73.5, y: 69.5}
+        - {x: -140.5, y: 50.5}
+        - {x: -152.5, y: 19.5}
+        - {x: -152.5, y: -19.5}
+        - {x: -119.5, y: -60.5}
+        - {x: -87.5, y: -77.5}
+        - {x: -58.5, y: -80.5}
+        - {x: 35.5, y: -80.5}
+        - {x: 113.5, y: -61.5}
+        - {x: 134.5, y: -52.5}
+        - {x: 152.5, y: 11.5}
+    - name: Boomerang
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 423
+        width: 322
+        height: 129
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 161, y: -19.5}
+        - {x: 95, y: 64.5}
+        - {x: -77, y: 64.5}
+        - {x: -161, y: -12.5}
+        - {x: -161, y: -64.5}
+        - {x: -85, y: -64.5}
+        - {x: 18, y: -27.5}
+        - {x: 91, y: -64.5}
+        - {x: 161, y: -64.5}
+    - name: Cactus
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 186
+        width: 186
+        height: 205
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 73, y: 58.5}
+        - {x: 27, y: 102.5}
+        - {x: -31, y: 102.5}
+        - {x: -92, y: 40.5}
+        - {x: -93, y: 31.5}
+        - {x: -93, y: -54.5}
+        - {x: -74, y: -84.5}
+        - {x: -43, y: -102.5}
+        - {x: 48, y: -102.5}
+        - {x: 90, y: -64.5}
+        - {x: 93, y: -43.5}
+        - {x: 93, y: 25.5}
+    - name: Bottle
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 18
+        width: 115
+        height: 319
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 30.5, y: 159.5}
+        - {x: -20.5, y: 159.5}
+        - {x: -35.5, y: 131.5}
+        - {x: -57.5, y: 63.5}
+        - {x: -57.5, y: -144.5}
+        - {x: -47.5, y: -153.5}
+        - {x: -37.5, y: -159.5}
+        - {x: 44.5, y: -159.5}
+        - {x: 57.5, y: -145.5}
+        - {x: 57.5, y: 58.5}
+        - {x: 56.5, y: 66.5}
+    - name: Pikachu
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 12
+        width: 356
+        height: 363
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 139, y: -78.5}
+        - {x: 145, y: -14.5}
+        - {x: 152, y: 34.5}
+        - {x: 136, y: 54.5}
+        - {x: 178, y: 95.5}
+        - {x: 178, y: 112.5}
+        - {x: 145, y: 164.5}
+        - {x: 115, y: 181.5}
+        - {x: 81, y: 181.5}
+        - {x: 54, y: 170.5}
+        - {x: 2, y: 116.5}
+        - {x: -32, y: 100.5}
+        - {x: -73, y: 70.5}
+        - {x: -153, y: 85.5}
+        - {x: -178, y: 78.5}
+        - {x: -178, y: 56.5}
+        - {x: -162, y: 30.5}
+        - {x: -110, y: 11.5}
+        - {x: -79, y: -20.5}
+        - {x: -104, y: -59.5}
+        - {x: -97, y: -83.5}
+        - {x: -73, y: -94.5}
+        - {x: -74, y: -143.5}
+        - {x: -16, y: -180.5}
+        - {x: -12, y: -181.5}
+        - {x: 23, y: -181.5}
+        - {x: 34, y: -163.5}
+        - {x: 117, y: -161.5}
+        - {x: 139, y: -114.5}
+    - name: Flowerpot
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 18
+        width: 217
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 94.5, y: 76}
+        - {x: -91.5, y: 76}
+        - {x: -107.5, y: 69}
+        - {x: -108.5, y: 64}
+        - {x: -108.5, y: 29}
+        - {x: -87.5, y: 14}
+        - {x: -66.5, y: -76}
+        - {x: 65.5, y: -76}
+        - {x: 105.5, y: 9}
+        - {x: 108.5, y: 19}
+        - {x: 108.5, y: 69}
+    - name: Banana
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 421
+        width: 323
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 76.5, y: 65}
+        - {x: -60.5, y: 65}
+        - {x: -139.5, y: 32}
+        - {x: -161.5, y: 7}
+        - {x: -161.5, y: -61}
+        - {x: -160.5, y: -65}
+        - {x: 49.5, y: -65}
+        - {x: 105.5, y: -60}
+        - {x: 140.5, y: -65}
+        - {x: 152.5, y: -65}
+        - {x: 161.5, y: -48}
+        - {x: 161.5, y: -2}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

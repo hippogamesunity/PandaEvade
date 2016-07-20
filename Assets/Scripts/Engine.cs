@@ -9,59 +9,93 @@ namespace Assets.Scripts
 {
     public class Engine : Script
     {
-        public TweenPanel MenuPanel;
-        public TweenPanel ResultPanel;
-        public TweenPanel[] IngamePanels;
+        public UI UI;
         public GameObject Stage;
         public Branch[] Branches;
         public ParticleSystem[] Winds;
         public Transform Balls;
-        public UILabel Score;
-        public UILabel Result;
-        public UIBasicSprite[] Hearts;
         public Panda Panda;
 
-        private int _count;
-        private readonly List<float> _ballTimes = new List<float>(); 
+        private int _progress;
+        private bool _continue;
+        private readonly List<float> _ballTimes = new List<float>();
+
+        public void Update()
+        {
+            #if UNITY_EDITOR
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Debug.Log("RESET");
+                PlayerPrefs.DeleteAll();
+                PlayerPrefs.Save();
+            }
+
+            #endif
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (UI.MenuPanels[0].State == TweenPanelState.Opened)
+                {
+                    Application.Quit();
+                }
+                else if (UI.IngamePanels[0].State == TweenPanelState.Opened)
+                {
+                    UI.Abort();
+                }
+            }
+        }
+
+        public void OnApplicationPause(bool pause)
+        {
+            if (pause) Profile.Instance.Save();
+        }
+
+        public void OnApplicationQuit()
+        {
+            Profile.Instance.Save();
+        }
 
         public void Play()
         {
-            TaskScheduler.CreateTask(() => CreateWind(Random.Range(0, 2)), Id, 2);
-            Stage.transform.localPosition = new Vector3(0, -12, 0);
-            TweenPosition.Begin(Stage, 0.5f, new Vector3(0, 0, 0));
-            MenuPanel.Hide();
-            TaskScheduler.CreateTask(() =>
-            {
-                foreach (var panel in IngamePanels)
-                {
-                    panel.Show();
-                }
-            }, Id, 0.5f);
+            TaskScheduler.CreateTask(() => CreateWind(0), Id, 3);
+            UI.OpenIngame();
             Panda.Reset();
-            _count = 0;
+            _progress = 0;
+            _continue = false;
+            _ballTimes.Clear();
+        }
+
+        public void Continue()
+        {
+            TaskScheduler.CreateTask(() => CreateWind(Random.Range(0, 2)), Id, 2);
+            Stage.transform.localPosition = new Vector3(0, -15, 0);
+            TweenPosition.Begin(Stage, 0.5f, new Vector3(0, 0, 0));
+            UI.OpenIngame();
+            Panda.Continue();
+            _continue = true;
             _ballTimes.Clear();
         }
 
         public void Stop(int score)
         {
             TaskScheduler.Kill(Id);
-            Result.SetText(score);
             Profile.Instance.BestScore = Math.Max(score, Profile.Instance.BestScore.Long);
-            TweenPosition.Begin(Stage, 0.5f, new Vector3(0, -12, 0));
-            ResultPanel.Show();
+            TweenPosition.Begin(Stage, 0.5f, new Vector3(0, -15, 0));
+            UI.OpenResult(score, _continue);
+        }
 
-            foreach (var panel in IngamePanels)
+        public void Abort()
+        {
+            TaskScheduler.Kill(Id);
+            TweenPosition.Begin(Stage, 0.5f, new Vector3(0, -15, 0));
+
+            foreach (var ball in FindObjectsOfType<Ball>())
             {
-                panel.Hide();
+                Destroy(ball.gameObject);
             }
         }
-
-        public void ReturnToMenu()
-        {
-            ResultPanel.Hide();
-            MenuPanel.Show();
-        }
-
+        
         public void CreateWind(int side)
         {
             const float ballDelay = 0.5f;
@@ -88,7 +122,7 @@ namespace Assets.Scripts
                 TaskScheduler.CreateTask(() => CreateBall(side), Id, ballDelay);
             }
 
-            var delay = Mathf.Max(0.5f, 2 - _count / 100f);
+            var delay = Mathf.Max(0.25f, 2 - _progress / 100f);
 
             TaskScheduler.CreateTask(() => CreateWind(Random.Range(0, 2)), Id, Random.Range(delay, 1.5f * delay));
         }
@@ -99,18 +133,50 @@ namespace Assets.Scripts
 
             var distribution = new Dictionary<BallId, int>
             {
-                { BallId.TennisBall, 10 }
+                { BallId.Beach, 1 },
+                { BallId.Tennis, 1 },
+                { BallId.Tomato, 1 }
             };
             var collection = new List<BallId>();
 
-            if (_count > 5)
+            if (_progress > 5)
             {
-                distribution.Add(BallId.Boomerang, Math.Max(10, _count - 5));
+                distribution.Add(BallId.Boomerang, 1);
             }
 
-            if (_count > 10)
+            if (_progress > 10)
             {
-                distribution.Add(BallId.FootballBall, Math.Max(10, _count - 10));
+                distribution.Add(BallId.Rugby, 1);
+            }
+
+            if (_progress > 15)
+            {
+                distribution.Add(BallId.Football, 1);
+            }
+
+            if (_progress > 20)
+            {
+                distribution.Add(BallId.Banana, 1);
+            }
+
+            if (_progress > 25)
+            {
+                distribution.Add(BallId.Grenade, 1);
+            }
+
+            if (_progress > 30)
+            {
+                distribution.Add(BallId.Cactus, 1);
+            }
+
+            if (_progress > 35)
+            {
+                distribution.Add(BallId.Bottle, 1);
+            }
+
+            if (_progress > 40)
+            {
+                distribution.Add(BallId.Pokemon, 1);
             }
 
             foreach (var item in distribution)
@@ -124,18 +190,27 @@ namespace Assets.Scripts
             var ballId = collection[CRandom.GetRandom(collection.Count)];
             var ball = CreateBall(ballId, side);
 
-            if (ballId == BallId.Boomerang)
+            switch (ballId)
             {
-                TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0 && !ball.Hit) CreateBall(BallId.Boomerang, side == 0 ? 1 : 0); }, Id, returnTime);
-                _ballTimes.Add(Time.time + returnTime);
-            }
-            else if (ballId == BallId.FootballBall)
-            {
-                TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0) CreateBall(BallId.FootballShoe, side); }, Id, returnTime);
-                _ballTimes.Add(Time.time + returnTime);
+                case BallId.Boomerang:
+                    TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0 && !ball.Hit) CreateBall(BallId.Boomerang, side == 0 ? 1 : 0); }, Id, returnTime);
+                    _ballTimes.Add(Time.time + returnTime);
+                    break;
+                case BallId.Pokemon:
+                    TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0 && !ball.Hit) CreateBall(BallId.Pikachu, side == 0 ? 1 : 0); }, Id, returnTime);
+                    _ballTimes.Add(Time.time + returnTime);
+                    break;
+                case BallId.Football:
+                    TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0) CreateBall(BallId.Shoe, side); }, Id, returnTime);
+                    _ballTimes.Add(Time.time + returnTime);
+                    break;
+                case BallId.Cactus:
+                    TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0) CreateBall(BallId.Flowerpot, side); }, Id, returnTime);
+                    _ballTimes.Add(Time.time + returnTime);
+                    break;
             }
 
-            _count++;
+            _progress++;
             _ballTimes.Add(Time.time);
         }
 
@@ -148,30 +223,6 @@ namespace Assets.Scripts
             Destroy(instance, 5);
 
             return ball;
-        }
-        
-        public void UpdateScore(int score)
-        {
-            Score.SetText(score);
-        }
-
-        public void UpdateHearts(int hearts)
-        {
-            for (var i = 0; i < Hearts.Length; i++)
-            {
-                Hearts[i].enabled = hearts > i;
-            }
-        }
-        public void OpenLeaderboard()
-        {
-            Debug.Log("OpenLeaderboard");
-            GamesServices.OpenLeaderboards(new Dictionary<string, long> { { GPGConstants.leaderboard_highscore, Profile.Instance.BestScore.Long } } );
-        }
-
-        public void OpenAchievements()
-        {
-            Debug.Log("OpenAchievements");
-            GamesServices.OpenAchievements(new List<string>());
         }
     }
 }
