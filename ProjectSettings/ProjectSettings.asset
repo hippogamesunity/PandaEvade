@@ -91,14 +91,14 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleIdentifier: com.ZenBen
-  bundleVersion: 0.1.4
+  bundleVersion: 0.2
   preloadedAssets: []
   metroEnableIndependentInputSource: 0
   metroEnableLowLatencyPresentationAPI: 0
   xboxOneDisableKinectGpuReservation: 0
   virtualRealitySupported: 0
   productGUID: bf6728fe4dafe2a4bb0be6319fb36fb9
-  AndroidBundleVersionCode: 5
+  AndroidBundleVersionCode: 6
   AndroidMinSdkVersion: 15
   AndroidPreferredInstallLocation: 1
   aotOptions: 
