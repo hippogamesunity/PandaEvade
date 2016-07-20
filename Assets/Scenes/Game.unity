@@ -8560,7 +8560,7 @@ MonoBehaviour:
     mMethodName: EvadeRight
     mParameters: []
     oneShot: 0
-  Sensitivity: 0.15
+  Sensitivity: 0.05
 --- !u!61 &1913193868
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135c9fa96f04b2841a505814d7526ff0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Torque: 200
+  Torque: 300
 --- !u!212 &21259870
 SpriteRenderer:
   m_ObjectHideFlags: 1
