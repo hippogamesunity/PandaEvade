@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Common;
 using UnityEngine;
@@ -138,6 +139,7 @@ namespace Assets.Scripts
                 Profile.Instance.UnlockedItems.Add(Engine.Panda.Item);
                 UnlockedItem.spriteName = Engine.Panda.Item.ToString();
                 ItemUnlockedPanel.Show();
+                AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.ItemUnlocked);
             }
         }
 
@@ -232,12 +234,25 @@ namespace Assets.Scripts
         public void Mute()
         {
             Profile.Instance.Sound = !Profile.Instance.Sound.Bool;
+            AudioPlayer.Instance.SetVolume(Profile.Instance.Sound.Bool);
             UpdateSettings();
         }
 
         public void OpenLeaderboard()
         {
-            GamesServices.OpenLeaderboards(new Dictionary<string, long> { { GPGConstants.leaderboard_highscore, Profile.Instance.BestScore.Long } });
+            #if UNITY_ANDROID
+
+            Action action = () => GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGConstants.leaderboard_highscore);
+
+            #else
+
+            Action action = Social.ShowLeaderboardUI;
+
+            #endif
+
+            var scores = new Dictionary<string, long> { { GPGConstants.leaderboard_highscore, Profile.Instance.BestScore.Long } };
+
+            GamesServices.PostScores(scores, (success, exception) => { if (success) action(); });
         }
 
         public void OpenAchievements()
@@ -263,7 +278,7 @@ namespace Assets.Scripts
             if (Profile.Instance.UnlockedItems.Contains(BallId.PremiumBeer)) achievements.Add(GPGConstants.achievement_premium_beer_bottle);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Grenade)) achievements.Add(GPGConstants.achievement_grenade);
 
-            GamesServices.OpenAchievements(achievements);
+            GamesServices.PostAchievements(achievements, (success, exception) => { if (success) Social.ShowAchievementsUI(); });
         }
 
         private void UpdateSettings()

@@ -11,29 +11,29 @@ namespace Assets.Scripts.Common
         public static bool EnableLog = true;
         public static bool Busy { get; private set; }
 
-        public static void OpenLeaderboards(Dictionary<string, long> scores)
+        public static void PostScores(Dictionary<string, long> scores)
         {
-            OpenLeaderboards(scores, ((success, exception) => { }));
+            PostScores(scores, ((success, exception) => { }));
         }
 
-        public static void OpenLeaderboards(Dictionary<string, long> scores, Action<bool, Exception> callback)
+        public static void PostScores(Dictionary<string, long> scores, Action<bool, Exception> callback)
         {
             AuthorizedAction(() => ReportScores(scores, callback), callback);
         }
 
-        public static void OpenAchievements(List<string> achievements)
+        public static void PostAchievements(List<string> achievements)
         {
-            OpenAchievements(achievements, ((success, exception) => { }));
+            PostAchievements(achievements, ((success, exception) => { }));
         }
 
-        public static void OpenAchievements(List<string> achievements, Action<bool, Exception> callback)
+        public static void PostAchievements(List<string> achievements, Action<bool, Exception> callback)
         {
             AuthorizedAction(() => UnlockAchievements(achievements, callback), callback);
         }
 
         public static void LoadAchievements(Action<bool, IAchievement[], Exception> callback)
         {
-            AuthorizedAction(() => { Social.Active.LoadAchievements(achievements => Complete(() => {}, (success, exception) => callback(true, achievements, null))); }, (success, exception) => callback(success, null, exception));
+            AuthorizedAction(() => { Social.Active.LoadAchievements(achievements => Complete((success, exception) => callback(true, achievements, null))); }, (success, exception) => callback(success, null, exception));
         }
 
         public static void AuthorizedAction(Action action)
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Common
         {
             if (scores.Count == 0)
             {
-                Complete(Social.ShowLeaderboardUI, callback);
+                Complete(callback);
             }
             else
             {
@@ -70,7 +70,7 @@ namespace Assets.Scripts.Common
         {
             if (achievements.Count == 0)
             {
-                Complete(Social.ShowAchievementsUI, callback);
+                Complete(callback);
             }
             else
             {
@@ -94,7 +94,6 @@ namespace Assets.Scripts.Common
             if (Busy)
             {
                 WriteLog("busy...");
-
                 return;
             }
 
@@ -117,14 +116,14 @@ namespace Assets.Scripts.Common
             {
                 WriteLog("authentication...");
 
-                #if UNITY_ANDROID || UNITY_IPHONE
+                #if UNITY_ANDROID
 
                 if (!Social.localUser.authenticated)
                 {
                     var config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder().Build();
 
                     GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
-                    GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = false;
+                    GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
                     GooglePlayGames.PlayGamesPlatform.Activate();
                 }
 
@@ -154,6 +153,12 @@ namespace Assets.Scripts.Common
         private static void Complete(Action action, Action<bool, Exception> callback)
         {
             action();
+            Busy = false;
+            callback(true, null);
+        }
+
+        private static void Complete(Action<bool, Exception> callback)
+        {
             Busy = false;
             callback(true, null);
         }

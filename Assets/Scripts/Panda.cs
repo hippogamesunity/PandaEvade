@@ -83,6 +83,7 @@ namespace Assets.Scripts
             if (Math.Sign(_evasion) == sign)
             {
                 UI.UpdateScore(++Score);
+                AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.Swing);
             }
             else
             {
@@ -95,6 +96,7 @@ namespace Assets.Scripts
                 {
                     TaskScheduler.Kill(Id);
                     Animator.Play(HitAnimation.name);
+                    AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.Hit);
                     TaskScheduler.CreateTask(Stand, Id, HitAnimation.length);
                 }
                 else
@@ -102,6 +104,7 @@ namespace Assets.Scripts
                     Item = c.name.Split('/')[1].ToEnum<BallId>();
                     TaskScheduler.Kill(Id);
                     Animator.Play(FallAnimation.name);
+                    AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.Fall);
                     Beads.Fall();
                     TaskScheduler.CreateTask(() => Engine.Stop(Score), Id, 2);
                 }
@@ -117,6 +120,7 @@ namespace Assets.Scripts
 
             TaskScheduler.Kill(Id);
             Animator.Play(FallAnimation.name);
+            AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.Fall);
             Beads.Fall();
         }
 

@@ -20,6 +20,12 @@ namespace Assets.Scripts
         private bool _continue;
         private readonly List<float> _ballTimes = new List<float>();
 
+        public void Start()
+        {
+            AudioPlayer.Instance.SetVolume(Profile.Instance.Sound.Bool);
+            AudioPlayer.Instance.PlayMusic(GameMusic.Ingame);
+        }
+
         public void Update()
         {
             #if UNITY_EDITOR
