@@ -91,14 +91,14 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleIdentifier: com.ZenBen
-  bundleVersion: 0.2
+  bundleVersion: 1.0
   preloadedAssets: []
   metroEnableIndependentInputSource: 0
   metroEnableLowLatencyPresentationAPI: 0
   xboxOneDisableKinectGpuReservation: 0
   virtualRealitySupported: 0
   productGUID: bf6728fe4dafe2a4bb0be6319fb36fb9
-  AndroidBundleVersionCode: 6
+  AndroidBundleVersionCode: 7
   AndroidMinSdkVersion: 15
   AndroidPreferredInstallLocation: 1
   aotOptions: 
@@ -485,5 +485,5 @@ PlayerSettings:
   additionalIl2CppArgs::additionalIl2CppArgs: 
   cloudProjectId: a8395ad9-622b-4534-a5ae-cc555bdcfa23
   projectName: com.ZenBen
-  organizationId: hippo-games-26593
+  organizationId: hippo-games
   cloudEnabled: 0

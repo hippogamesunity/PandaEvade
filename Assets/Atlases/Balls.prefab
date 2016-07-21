@@ -1,0 +1,292 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &192020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 409208}
+  - 114: {fileID: 11466362}
+  m_Layer: 0
+  m_Name: Balls
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &409208
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 192020}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+--- !u!114 &11466362
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 192020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d0c51bb0b6e93049af5e88f93826e3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 67d0bfde362919a4c85e0cb3bcc05d80, type: 2}
+  mSprites:
+  - name: Banana
+    x: 0
+    y: 12
+    width: 321
+    height: 128
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 102
+    paddingRight: 89
+    paddingTop: 197
+    paddingBottom: 187
+  - name: Beach
+    x: 0
+    y: 395
+    width: 267
+    height: 267
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 124
+    paddingRight: 121
+    paddingTop: 120
+    paddingBottom: 125
+  - name: Boomerang
+    x: 691
+    y: 898
+    width: 320
+    height: 126
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 98
+    paddingRight: 94
+    paddingTop: 190
+    paddingBottom: 196
+  - name: Cactus
+    x: 355
+    y: 247
+    width: 184
+    height: 203
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 165
+    paddingRight: 163
+    paddingTop: 136
+    paddingBottom: 173
+  - name: Flowerpot
+    x: 656
+    y: 697
+    width: 215
+    height: 150
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 149
+    paddingRight: 148
+    paddingTop: 186
+    paddingBottom: 176
+  - name: Football
+    x: 0
+    y: 141
+    width: 253
+    height: 253
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 132
+    paddingRight: 127
+    paddingTop: 130
+    paddingBottom: 129
+  - name: Grenate
+    x: 355
+    y: 63
+    width: 159
+    height: 183
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 195
+    paddingRight: 158
+    paddingTop: 151
+    paddingBottom: 178
+  - name: Hammer
+    x: 667
+    y: 365
+    width: 120
+    height: 299
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 203
+    paddingRight: 189
+    paddingTop: 103
+    paddingBottom: 110
+  - name: Icecream
+    x: 788
+    y: 371
+    width: 106
+    height: 293
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 203
+    paddingRight: 203
+    paddingTop: 109
+    paddingBottom: 110
+  - name: LightBeer
+    x: 667
+    y: 26
+    width: 102
+    height: 338
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 207
+    paddingRight: 203
+    paddingTop: 66
+    paddingBottom: 108
+  - name: Pikachu
+    x: 0
+    y: 663
+    width: 354
+    height: 361
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 55
+    paddingRight: 103
+    paddingTop: 57
+    paddingBottom: 94
+  - name: Pokemon
+    x: 872
+    y: 705
+    width: 142
+    height: 142
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 186
+    paddingRight: 184
+    paddingTop: 183
+    paddingBottom: 187
+  - name: PremiumBeer
+    x: 563
+    y: 310
+    width: 103
+    height: 354
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 207
+    paddingRight: 202
+    paddingTop: 52
+    paddingBottom: 106
+  - name: Rugby
+    x: 355
+    y: 665
+    width: 300
+    height: 182
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 105
+    paddingRight: 107
+    paddingTop: 161
+    paddingBottom: 169
+  - name: Shoe
+    x: 355
+    y: 848
+    width: 335
+    height: 176
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 83
+    paddingRight: 94
+    paddingTop: 173
+    paddingBottom: 163
+  - name: Tennis
+    x: 770
+    y: 69
+    width: 142
+    height: 142
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 188
+    paddingRight: 182
+    paddingTop: 183
+    paddingBottom: 187
+  - name: ToiletPaper
+    x: 355
+    y: 451
+    width: 207
+    height: 213
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 151
+    paddingRight: 154
+    paddingTop: 153
+    paddingBottom: 146
+  - name: Tomato
+    x: 770
+    y: 212
+    width: 164
+    height: 152
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 178
+    paddingRight: 170
+    paddingTop: 164
+    paddingBottom: 196
+  mPixelSize: 1
+  mReplacement: {fileID: 0}
+  mCoordinates: 0
+  sprites: []
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 192020}
+  m_IsPrefabParent: 1

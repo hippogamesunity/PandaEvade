@@ -139,46 +139,19 @@ namespace Assets.Scripts
             };
             var collection = new List<BallId>();
 
-            if (_progress > 5)
-            {
-                distribution.Add(BallId.Boomerang, 1);
-            }
-
-            if (_progress > 10)
-            {
-                distribution.Add(BallId.Rugby, 1);
-            }
-
-            if (_progress > 15)
-            {
-                distribution.Add(BallId.Football, 1);
-            }
-
-            if (_progress > 20)
-            {
-                distribution.Add(BallId.Banana, 1);
-            }
-
-            if (_progress > 25)
-            {
-                distribution.Add(BallId.Grenade, 1);
-            }
-
-            if (_progress > 30)
-            {
-                distribution.Add(BallId.Cactus, 1);
-            }
-
-            if (_progress > 35)
-            {
-                distribution.Add(BallId.Bottle, 1);
-            }
-
-            if (_progress > 40)
-            {
-                distribution.Add(BallId.Pokemon, 1);
-            }
-
+            if (_progress > 5) distribution.Add(BallId.Boomerang, 1);
+            if (_progress > 10) distribution.Add(BallId.Rugby, 1);
+            if (_progress > 15) distribution.Add(BallId.Football, 1);
+            if (_progress > 20) distribution.Add(BallId.Banana, 1);
+            if (_progress > 25) distribution.Add(BallId.ToiletPaper, 1);
+            if (_progress > 30) distribution.Add(BallId.Cactus, 1);
+            if (_progress > 35) distribution.Add(BallId.LightBeer, 1);
+            if (_progress > 40) distribution.Add(BallId.Icecream, 1);
+            if (_progress > 45) distribution.Add(BallId.Hammer, 1);
+            if (_progress > 50) distribution.Add(BallId.Pokeball, 1);
+            if (_progress > 55) distribution.Add(BallId.PremiumBeer, 1);
+            if (_progress > 60) distribution.Add(BallId.Grenade, 1);
+            
             foreach (var item in distribution)
             {
                 for (var i = 0; i < item.Value; i++)
@@ -196,7 +169,7 @@ namespace Assets.Scripts
                     TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0 && !ball.Hit) CreateBall(BallId.Boomerang, side == 0 ? 1 : 0); }, Id, returnTime);
                     _ballTimes.Add(Time.time + returnTime);
                     break;
-                case BallId.Pokemon:
+                case BallId.Pokeball:
                     TaskScheduler.CreateTask(() => { if (Panda.Hearts >= 0 && !ball.Hit) CreateBall(BallId.Pikachu, side == 0 ? 1 : 0); }, Id, returnTime);
                     _ballTimes.Add(Time.time + returnTime);
                     break;

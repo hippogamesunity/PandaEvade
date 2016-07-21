@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Assets.Scripts.Common;
 using SimpleJSON;
 using UnityEngine;
 
@@ -8,6 +10,7 @@ namespace Assets.Scripts
     {
         public ProtectedValue BestScore;
         public ProtectedValue Sound;
+        public List<BallId> UnlockedItems; 
 
         private static Profile _instance;
         private const string ProfileKey = "T";
@@ -48,10 +51,18 @@ namespace Assets.Scripts
 
         private JSONNode ToJson()
         {
+            var unlockedItems = new JSONArray();
+
+            foreach (var item in UnlockedItems)
+            {
+                unlockedItems.Add(((int) item).ToString());
+            }
+
             return new JSONClass
             {
                 { "BestScore", BestScore.ToJson() },
-                { "Sound", Sound.ToJson() }
+                { "Sound", Sound.ToJson() },
+                { "UnlockedItems", unlockedItems }
             };
         }
 
@@ -60,7 +71,8 @@ namespace Assets.Scripts
             var profile = new Profile
             {
                 BestScore = ProtectedValue.FromJson(json["BestScore"]),
-                Sound = ProtectedValue.FromJson(json["Sound"])
+                Sound = ProtectedValue.FromJson(json["Sound"]),
+                UnlockedItems = json["UnlockedItems"].Childs.Select(i => i.Value.ToEnum<BallId>()).ToList()
             };
 
             return profile;

@@ -13,7 +13,10 @@ namespace Assets.Scripts
         public TweenPanel ContinuePanel;
         public TweenPanel ResultPanel;
         public TweenPanel[] IngamePanels;
+        public TweenPanel ItemUnlockedPanel;
+        public UISprite UnlockedItem;
         public UIBasicSprite[] Hearts;
+        public GameObject Warning;
         public UILabel Score;
         public UILabel MaxScore;
         public UILabel Result;
@@ -107,14 +110,35 @@ namespace Assets.Scripts
             }
             else
             {
-                ResultPanel.Show();
+                OpenResult();
             }
         }
+
+        public void CloseItemUnlocked()
+        {
+            ItemUnlockedPanel.Hide();
+            ResultPanel.Show();
+        }
+
         public void SkipAds()
         {
             VKontaktePostStatus.SetText(null);
             ContinuePanel.Hide();
-            ResultPanel.Show();
+            OpenResult();
+        }
+
+        public void OpenResult()
+        {
+            if (Profile.Instance.UnlockedItems.Contains(Engine.Panda.Item))
+            {
+                ResultPanel.Show();
+            }
+            else
+            {
+                Profile.Instance.UnlockedItems.Add(Engine.Panda.Item);
+                UnlockedItem.spriteName = Engine.Panda.Item.ToString();
+                ItemUnlockedPanel.Show();
+            }
         }
 
         public void ShowAds()
@@ -157,6 +181,8 @@ namespace Assets.Scripts
             {
                 Hearts[i].enabled = hearts > i;
             }
+
+            Warning.SetActive(hearts <= 0);
         }
 
         public void Pause()
@@ -183,8 +209,6 @@ namespace Assets.Scripts
 
         public void VKontaktePost()
         {
-            return;
-
             if (Time.time - _repostTime > 10)
             {
                 const string appId = "5423703";
@@ -213,14 +237,33 @@ namespace Assets.Scripts
 
         public void OpenLeaderboard()
         {
-            Debug.Log("OpenLeaderboard");
             GamesServices.OpenLeaderboards(new Dictionary<string, long> { { GPGConstants.leaderboard_highscore, Profile.Instance.BestScore.Long } });
         }
 
         public void OpenAchievements()
         {
-            Debug.Log("OpenAchievements");
-            GamesServices.OpenAchievements(new List<string>());
+            var achievements = new List<string>();
+
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Beach)) achievements.Add(GPGConstants.achievement_beach_ball);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Tennis)) achievements.Add(GPGConstants.achievement_tennis);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Tomato)) achievements.Add(GPGConstants.achievement_tomato);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Boomerang)) achievements.Add(GPGConstants.achievement_boomerang);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Rugby)) achievements.Add(GPGConstants.achievement_rugby_ball);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Football)) achievements.Add(GPGConstants.achievement_football_ball);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Shoe)) achievements.Add(GPGConstants.achievement_sneaker);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Banana)) achievements.Add(GPGConstants.achievement_banana);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.ToiletPaper)) achievements.Add(GPGConstants.achievement_toilet_paper);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Cactus)) achievements.Add(GPGConstants.achievement_cactus);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Flowerpot)) achievements.Add(GPGConstants.achievement_flowerpot);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.LightBeer)) achievements.Add(GPGConstants.achievement_light_beer_bottle);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Icecream)) achievements.Add(GPGConstants.achievement_icecream);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Hammer)) achievements.Add(GPGConstants.achievement_hammer);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Pokeball)) achievements.Add(GPGConstants.achievement_pookeball);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Pikachu)) achievements.Add(GPGConstants.achievement_pookachu);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.PremiumBeer)) achievements.Add(GPGConstants.achievement_premium_beer_bottle);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Grenade)) achievements.Add(GPGConstants.achievement_grenade);
+
+            GamesServices.OpenAchievements(achievements);
         }
 
         private void UpdateSettings()

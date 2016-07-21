@@ -22,6 +22,7 @@ namespace Assets.Scripts
         
         public int Score { get; private set; }
         public int Hearts { get; private set; }
+        public BallId Item { get; private set; }
         
         public void Update()
         {
@@ -98,6 +99,7 @@ namespace Assets.Scripts
                 }
                 else
                 {
+                    Item = c.name.Split('/')[1].ToEnum<BallId>();
                     TaskScheduler.Kill(Id);
                     Animator.Play(FallAnimation.name);
                     Beads.Fall();

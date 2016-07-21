@@ -24,7 +24,25 @@
 
 public static class GPGConstants
 {
+        public const string achievement_tomato = "CgkIh9b_1uACEAIQEw"; // <GPGSID>
+        public const string achievement_hammer = "CgkIh9b_1uACEAIQCQ"; // <GPGSID>
+        public const string achievement_cactus = "CgkIh9b_1uACEAIQBQ"; // <GPGSID>
+        public const string achievement_grenade = "CgkIh9b_1uACEAIQCA"; // <GPGSID>
+        public const string achievement_banana = "CgkIh9b_1uACEAIQAg"; // <GPGSID>
+        public const string achievement_icecream = "CgkIh9b_1uACEAIQCg"; // <GPGSID>
+        public const string achievement_tennis = "CgkIh9b_1uACEAIQEQ"; // <GPGSID>
+        public const string achievement_pookachu = "CgkIh9b_1uACEAIQDA"; // <GPGSID>
+        public const string achievement_beach_ball = "CgkIh9b_1uACEAIQAw"; // <GPGSID>
+        public const string achievement_football_ball = "CgkIh9b_1uACEAIQBw"; // <GPGSID>
+        public const string achievement_sneaker = "CgkIh9b_1uACEAIQEA"; // <GPGSID>
+        public const string achievement_boomerang = "CgkIh9b_1uACEAIQBA"; // <GPGSID>
+        public const string achievement_pookeball = "CgkIh9b_1uACEAIQDQ"; // <GPGSID>
+        public const string achievement_toilet_paper = "CgkIh9b_1uACEAIQEg"; // <GPGSID>
+        public const string achievement_flowerpot = "CgkIh9b_1uACEAIQBg"; // <GPGSID>
         public const string leaderboard_highscore = "CgkIh9b_1uACEAIQAQ"; // <GPGSID>
+        public const string achievement_light_beer_bottle = "CgkIh9b_1uACEAIQCw"; // <GPGSID>
+        public const string achievement_premium_beer_bottle = "CgkIh9b_1uACEAIQDg"; // <GPGSID>
+        public const string achievement_rugby_ball = "CgkIh9b_1uACEAIQDw"; // <GPGSID>
 
 }
 
