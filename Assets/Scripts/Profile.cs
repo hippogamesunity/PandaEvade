@@ -38,7 +38,8 @@ namespace Assets.Scripts
                 return new Profile
                 {
                     BestScore = 0,
-                    Sound = true
+                    Sound = true,
+                    UnlockedItems = new List<BallId>()
                 };
             }
         }

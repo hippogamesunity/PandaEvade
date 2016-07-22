@@ -138,6 +138,7 @@ namespace Assets.Scripts
             else
             {
                 Profile.Instance.UnlockedItems.Add(Engine.Panda.Item);
+                Profile.Instance.Save();
                 UnlockedItem.spriteName = Engine.Panda.Item.ToString();
                 ItemUnlockedPanel.Show();
                 AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.ItemUnlocked);
@@ -235,6 +236,7 @@ namespace Assets.Scripts
         public void Mute()
         {
             Profile.Instance.Sound = !Profile.Instance.Sound.Bool;
+            Profile.Instance.Save();
             AudioPlayer.Instance.SetVolume(Profile.Instance.Sound.Bool);
             UpdateSettings();
         }
