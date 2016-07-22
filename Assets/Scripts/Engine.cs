@@ -20,6 +20,11 @@ namespace Assets.Scripts
         private bool _continue;
         private readonly List<float> _ballTimes = new List<float>();
 
+        public void Awake()
+        {
+            Localizer.Initialize();
+        }
+
         public void Start()
         {
             AudioPlayer.Instance.SetVolume(Profile.Instance.Sound.Bool);
@@ -137,26 +142,57 @@ namespace Assets.Scripts
         {
             const float returnTime = 1;
 
-            var distribution = new Dictionary<BallId, int>
-            {
-                { BallId.Beach, 1 },
-                { BallId.Tennis, 1 },
-                { BallId.Tomato, 1 }
-            };
             var collection = new List<BallId>();
 
-            if (_progress > 5) distribution.Add(BallId.Boomerang, 1);
-            if (_progress > 10) distribution.Add(BallId.Rugby, 1);
-            if (_progress > 15) distribution.Add(BallId.Football, 1);
-            if (_progress > 20) distribution.Add(BallId.Banana, 1);
-            if (_progress > 25) distribution.Add(BallId.ToiletPaper, 1);
-            if (_progress > 30) distribution.Add(BallId.Cactus, 1);
-            if (_progress > 35) distribution.Add(BallId.LightBeer, 1);
-            if (_progress > 40) distribution.Add(BallId.Icecream, 1);
-            if (_progress > 45) distribution.Add(BallId.Hammer, 1);
-            if (_progress > 50) distribution.Add(BallId.Pokeball, 1);
-            if (_progress > 55) distribution.Add(BallId.PremiumBeer, 1);
-            if (_progress > 60) distribution.Add(BallId.Grenade, 1);
+            var order = new[]
+            {
+                BallId.Beach,
+                BallId.Tennis,
+                BallId.Tomato,
+                BallId.Boomerang,
+                BallId.Rugby,
+                BallId.Football,
+                BallId.Banana,
+                BallId.Lifebuoy,
+                BallId.Boomerang,
+                BallId.ToiletPaper,
+                BallId.Cactus,
+                BallId.LightBeer,
+                BallId.Bread,
+                BallId.Icecream,
+                BallId.Football,
+                BallId.Hammer,
+                BallId.PremiumBeer,
+                BallId.Pokeball,
+                BallId.Grenade,
+                BallId.Cactus
+            };
+
+            var distribution = new Dictionary<BallId, int>
+            {
+                { order[0], 1 },
+                { order[1], 1 },
+                { order[2], 1 }
+            };
+
+            for (var i = 1; i < order.Length - 3; i++)
+            {
+                if (_progress > 5 * i)
+                {
+                    if (distribution.ContainsKey(order[i]))
+                    {
+                        distribution[order[i]]++;
+                    }
+                    else
+                    {
+                        distribution.Add(order[i], 1);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
             
             foreach (var item in distribution)
             {

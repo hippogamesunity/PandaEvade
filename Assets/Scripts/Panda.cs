@@ -79,6 +79,7 @@ namespace Assets.Scripts
             if (_hit != 0) return;
 
             var sign = Math.Sign(c.GetComponent<Rigidbody2D>().velocity.x);
+            var ball = c.name.Split('/')[1].ToEnum<BallId>();
 
             if (Math.Sign(_evasion) == sign)
             {
@@ -87,7 +88,14 @@ namespace Assets.Scripts
             }
             else
             {
-                UI.UpdateHearts(--Hearts);
+                Hearts -= 1;
+
+                if (ball == BallId.Rugby)
+                {
+                    Hearts -= 1;
+                }
+
+                UI.UpdateHearts(Hearts);
                 c.gameObject.GetComponent<Ball>().Recoil(-sign);
                 _hit = -sign;
                 SetReflection(_hit);
@@ -101,7 +109,7 @@ namespace Assets.Scripts
                 }
                 else
                 {
-                    Item = c.name.Split('/')[1].ToEnum<BallId>();
+                    Item = ball;
                     TaskScheduler.Kill(Id);
                     Animator.Play(FallAnimation.name);
                     AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.Fall);

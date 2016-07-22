@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Common
 {
+    [ExecuteInEditMode]
     public class Screenshot : Script
     {
         public int SuperSize = 1;
@@ -11,11 +12,16 @@ namespace Assets.Scripts.Common
         {
             if (Input.GetKeyDown(KeyCode.S))
             {
-                var filename = Md5.Encode(Convert.ToString(DateTime.Now)) + ".png";
-
-                Application.CaptureScreenshot(filename, SuperSize);
-                Debug.Log(filename);
+                Take();
             }
+        }
+
+        public void Take()
+        {
+            var filename = Md5.Encode(Convert.ToString(DateTime.Now)) + ".png";
+
+            Application.CaptureScreenshot(filename, SuperSize);
+            Debug.Log(filename);
         }
     }
 }

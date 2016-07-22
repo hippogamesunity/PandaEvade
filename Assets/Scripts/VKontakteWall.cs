@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Assets.Scripts.Behaviour;
 using Assets.Scripts.Common;
 using SimpleJSON;
 using UnityEngine;

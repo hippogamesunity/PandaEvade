@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using Assets.Scripts.Common;
 using UnityEngine;
 
-namespace Assets.Scripts.Behaviour
+namespace Assets.Scripts
 {
     public class VK : Script
     {
@@ -21,7 +21,7 @@ namespace Assets.Scripts.Behaviour
             Debug.Log("VK: authorizeLink = " + authorizeLink);
 
             browser.Load(authorizeLink);
-            browser.insets.left = browser.insets.right = 200;
+            browser.insets.left = browser.insets.right = 100;
             browser.insets.top = browser.insets.bottom = 100;
             browser.Show();
             browser.ShowToolBar(true);

@@ -41,11 +41,11 @@ namespace Assets.Scripts
                 VKontakteWall.OnSuccess += () =>
                 {
                     _repostTime = Time.time;
-                    VKontaktePostStatus.SetText("Ваш результат опубликован у вас на стене!");
+                    VKontaktePostStatus.SetText("Опубликовано");
                 };
                 VKontakteWall.OnError += error =>
                 {
-                    VKontaktePostStatus.SetText("Не удалось опубликовать результат.");
+                    VKontaktePostStatus.SetText("Ошибка при публикации");
                 };
             }
             else
@@ -123,13 +123,14 @@ namespace Assets.Scripts
 
         public void SkipAds()
         {
-            VKontaktePostStatus.SetText(null);
             ContinuePanel.Hide();
             OpenResult();
         }
 
         public void OpenResult()
         {
+            VKontaktePostStatus.SetText(null);
+
             if (Profile.Instance.UnlockedItems.Contains(Engine.Panda.Item))
             {
                 ResultPanel.Show();
@@ -213,16 +214,16 @@ namespace Assets.Scripts
         {
             if (Time.time - _repostTime > 10)
             {
-                const string appId = "5423703";
-                var message = string.Format(Localization.Get("%Repost.Message%"), Engine.Panda.Score, PlanformDependedSettings.StoreShortLink);
-                const string attachments = "photo-101568671_415412790";
+                const string appId = "5557552";
+                const string attachments = "photo-83404412_424403462";
+                var message = string.Format("Сможешь побить мой рекорд {0} в #ZenBen?\nБесплатно в Google Play: {1}", Profile.Instance.BestScore, PlanformDependedSettings.StoreShortLinkVKPromo);
 
-                VKontaktePostStatus.SetText("Попробуем опубиковать ваш результат...");
+                VKontaktePostStatus.SetText("Публикация...");
                 VKontakteWall.Post(appId, message, attachments);
             }
             else
             {
-                VKontaktePostStatus.SetText("Вы уже опубликовали результат.");
+                VKontaktePostStatus.SetText("Опубликовано");
             }
         }
 
@@ -242,7 +243,7 @@ namespace Assets.Scripts
         {
             #if UNITY_ANDROID
 
-            Action action = () => GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGConstants.leaderboard_highscore);
+            Action action = () => GooglePlayGames.PlayGamesPlatform.Instance.ShowLeaderboardUI(GPGConstants.leaderboard_player_scores);
 
             #else
 
@@ -250,7 +251,7 @@ namespace Assets.Scripts
 
             #endif
 
-            var scores = new Dictionary<string, long> { { GPGConstants.leaderboard_highscore, Profile.Instance.BestScore.Long } };
+            var scores = new Dictionary<string, long> { { GPGConstants.leaderboard_player_scores, Profile.Instance.BestScore.Long } };
 
             GamesServices.PostScores(scores, (success, exception) => { if (success) action(); });
         }
@@ -267,15 +268,17 @@ namespace Assets.Scripts
             if (Profile.Instance.UnlockedItems.Contains(BallId.Football)) achievements.Add(GPGConstants.achievement_football_ball);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Shoe)) achievements.Add(GPGConstants.achievement_sneaker);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Banana)) achievements.Add(GPGConstants.achievement_banana);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Lifebuoy)) achievements.Add(GPGConstants.achievement_lifebuoy);
             if (Profile.Instance.UnlockedItems.Contains(BallId.ToiletPaper)) achievements.Add(GPGConstants.achievement_toilet_paper);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Cactus)) achievements.Add(GPGConstants.achievement_cactus);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Flowerpot)) achievements.Add(GPGConstants.achievement_flowerpot);
             if (Profile.Instance.UnlockedItems.Contains(BallId.LightBeer)) achievements.Add(GPGConstants.achievement_light_beer_bottle);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Bread)) achievements.Add(GPGConstants.achievement_loaf);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Icecream)) achievements.Add(GPGConstants.achievement_icecream);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Hammer)) achievements.Add(GPGConstants.achievement_hammer);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.PremiumBeer)) achievements.Add(GPGConstants.achievement_premium_beer_bottle);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Pokeball)) achievements.Add(GPGConstants.achievement_pookeball);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Pikachu)) achievements.Add(GPGConstants.achievement_pookachu);
-            if (Profile.Instance.UnlockedItems.Contains(BallId.PremiumBeer)) achievements.Add(GPGConstants.achievement_premium_beer_bottle);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Grenade)) achievements.Add(GPGConstants.achievement_grenade);
 
             GamesServices.PostAchievements(achievements, (success, exception) => { if (success) Social.ShowAchievementsUI(); });

@@ -6,7 +6,7 @@
         #if UNITY_ANDROID || UNITY_WEBGL || UNITY_WEBPLAYER || UNITY_EDITOR
 
         public const string StoreLink = "https://play.google.com/store/apps/details?id=com.ZenBen&referrer=utm_source%3Drate";
-        public const string StoreShortLink = "https://goo.gl/dA5txe";
+        public const string StoreShortLinkVKPromo = "https://goo.gl/gJaq4l";
         
         #elif UNITY_IPHONE
 

@@ -42,7 +42,7 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 5aeead34a7089224d900683c13e920ee, type: 2}
   mSprites:
   - name: Accept
-    x: 1273
+    x: 1507
     y: 782
     width: 233
     height: 242
@@ -81,7 +81,7 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: Back
-    x: 1507
+    x: 1741
     y: 782
     width: 233
     height: 242
@@ -93,9 +93,22 @@ MonoBehaviour:
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
+  - name: Button
+    x: 511
+    y: 778
+    width: 527
+    height: 246
+    borderLeft: 100
+    borderRight: 100
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
   - name: Decline
-    x: 746
-    y: 48
+    x: 1039
+    y: 781
     width: 233
     height: 243
     borderLeft: 0
@@ -107,7 +120,7 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: Leaderboard
-    x: 511
+    x: 746
     y: 535
     width: 234
     height: 242
@@ -120,8 +133,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: LeaderboardRed
-    x: 746
-    y: 535
+    x: 511
+    y: 292
     width: 234
     height: 242
     borderLeft: 0
@@ -134,7 +147,7 @@ MonoBehaviour:
     paddingBottom: 0
   - name: NoSound
     x: 511
-    y: 292
+    y: 49
     width: 234
     height: 242
     borderLeft: 0
@@ -171,19 +184,6 @@ MonoBehaviour:
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
-  - name: Play
-    x: 511
-    y: 778
-    width: 527
-    height: 246
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
   - name: Rate
     x: 235
     y: 17
@@ -198,7 +198,7 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: Restart
-    x: 1039
+    x: 1273
     y: 781
     width: 233
     height: 243
@@ -211,19 +211,6 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: Resume
-    x: 511
-    y: 49
-    width: 234
-    height: 242
-    borderLeft: 0
-    borderRight: 0
-    borderTop: 0
-    borderBottom: 0
-    paddingLeft: 0
-    paddingRight: 0
-    paddingTop: 0
-    paddingBottom: 0
-  - name: Sound
     x: 746
     y: 292
     width: 234
@@ -236,9 +223,22 @@ MonoBehaviour:
     paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
+  - name: Sound
+    x: 746
+    y: 49
+    width: 234
+    height: 242
+    borderLeft: 0
+    borderRight: 0
+    borderTop: 0
+    borderBottom: 0
+    paddingLeft: 0
+    paddingRight: 0
+    paddingTop: 0
+    paddingBottom: 0
   - name: Swipe
-    x: 1741
-    y: 782
+    x: 1039
+    y: 538
     width: 216
     height: 242
     borderLeft: 0
@@ -250,7 +250,7 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: Title
-    x: 1039
+    x: 1256
     y: 695
     width: 524
     height: 85
@@ -263,8 +263,8 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: TitleRed
-    x: 1564
-    y: 696
+    x: 1256
+    y: 610
     width: 424
     height: 84
     borderLeft: 100
@@ -276,30 +276,30 @@ MonoBehaviour:
     paddingTop: 0
     paddingBottom: 0
   - name: VKontakte
-    x: 1039
-    y: 430
-    width: 126
-    height: 128
+    x: 511
+    y: 535
+    width: 234
+    height: 242
     borderLeft: 0
     borderRight: 0
     borderTop: 0
     borderBottom: 0
-    paddingLeft: 1
-    paddingRight: 1
+    paddingLeft: 0
+    paddingRight: 0
     paddingTop: 0
     paddingBottom: 0
   - name: YinYang
     x: 1039
-    y: 559
-    width: 135
-    height: 135
+    y: 395
+    width: 142
+    height: 142
     borderLeft: 0
     borderRight: 0
     borderTop: 0
     borderBottom: 0
-    paddingLeft: 7
+    paddingLeft: 0
     paddingRight: 0
-    paddingTop: 7
+    paddingTop: 0
     paddingBottom: 0
   mPixelSize: 1
   mReplacement: {fileID: 0}
