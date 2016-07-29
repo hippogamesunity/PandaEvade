@@ -971,6 +971,7 @@ Transform:
   - {fileID: 1944449984}
   - {fileID: 1148685214}
   - {fileID: 1360829335}
+  - {fileID: 726230776}
   m_Father: {fileID: 0}
   m_RootOrder: 1
 --- !u!114 &294240065
@@ -4559,6 +4560,64 @@ Transform:
   - {fileID: 1837528943}
   m_Father: {fileID: 409676681}
   m_RootOrder: 0
+--- !u!1 &726230775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 726230776}
+  - 114: {fileID: 726230778}
+  - 114: {fileID: 726230777}
+  m_Layer: 0
+  m_Name: AppMetrika
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &726230776
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 726230775}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 294240064}
+  m_RootOrder: 4
+--- !u!114 &726230777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 726230775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc7b82b1248c84e468b83ba7fb3f14a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  APIKey: 6038c463-1891-4a70-a4d4-a5a447f12e9f
+  ExceptionsReporting: 1
+  SessionTimeoutSec: 10
+  TrackLocation: 0
+  LoggingEnabled: 0
+--- !u!114 &726230778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 726230775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddb5bd26ecbed8f48be60bca202583c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  APIKeyGooglePlay: 6038c463-1891-4a70-a4d4-a5a447f12e9f
+  APIKeyAppStore: c307ac5c-4803-4059-a3e0-11911d414e2a
 --- !u!1 &747247219
 GameObject:
   m_ObjectHideFlags: 0

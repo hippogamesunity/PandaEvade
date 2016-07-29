@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Common;
@@ -75,6 +76,7 @@ namespace Assets.Scripts
             _progress = 0;
             _continue = false;
             _ballTimes.Clear();
+            AppMetrica.Instance.ReportEvent("Play");
         }
 
         public void Continue()
@@ -94,6 +96,7 @@ namespace Assets.Scripts
             Profile.Instance.BestScore = Math.Max(score, Profile.Instance.BestScore.Long);
             TweenPosition.Begin(Stage, 0.5f, new Vector3(0, -15, 0));
             UI.OpenResult(score, _continue);
+            AppMetrica.Instance.ReportEvent("Score", new Hashtable { { "Score", score } });
         }
 
         public void Abort()

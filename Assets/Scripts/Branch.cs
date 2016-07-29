@@ -13,6 +13,15 @@ namespace Assets.Scripts
         public void Start()
         {
             Stand();
+
+            if (Camera.main.aspect >= 0.6)
+            {
+                var swift = GetComponent<Renderer>().bounds.size.x / 2f;
+                var align = Camera.main.ViewportToWorldPoint(new Vector3(transform.position.x < 0 ? 0 : 1, 1));
+
+                align.z = 0;
+                transform.position = align - new Vector3(0, swift) + new Vector3(transform.position.x < 0  ? -0.2f : 0.2f, 0.2f);
+            }
         }
 
         public void Stand()

@@ -42,10 +42,12 @@ namespace Assets.Scripts
                 {
                     _repostTime = Time.time;
                     VKontaktePostStatus.SetText("Опубликовано");
+                    AppMetrica.Instance.ReportEvent("VKPostSuccess");
                 };
                 VKontakteWall.OnError += error =>
                 {
                     VKontaktePostStatus.SetText("Ошибка при публикации");
+                    AppMetrica.Instance.ReportEvent("VKPostError");
                 };
             }
             else
@@ -142,6 +144,7 @@ namespace Assets.Scripts
                 UnlockedItem.spriteName = Engine.Panda.Item.ToString();
                 ItemUnlockedPanel.Show();
                 AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.ItemUnlocked);
+                AppMetrica.Instance.ReportEvent("ItemUnlocked", new Hashtable { { "Item", Engine.Panda.Item.ToString() } });
             }
         }
 
@@ -158,6 +161,7 @@ namespace Assets.Scripts
                         if (result == ShowResult.Finished)
                         {
                             TaskScheduler.CreateTask(Engine.Continue, Id, 1);
+                            AppMetrica.Instance.ReportEvent("AdWatch");
                         }
                         else
                         {
@@ -231,6 +235,7 @@ namespace Assets.Scripts
         public void Rate()
         {
             Application.OpenURL(PlanformDependedSettings.StoreLink);
+            AppMetrica.Instance.ReportEvent("Rate");
         }
 
         public void Mute()
@@ -255,7 +260,7 @@ namespace Assets.Scripts
 
             var scores = new Dictionary<string, long> { { GPGConstants.leaderboard_player_scores, Profile.Instance.BestScore.Long } };
 
-            GamesServices.PostScores(scores, (success, exception) => { if (success) action(); });
+            GamesServices.PostScores(scores, (success, exception) => { if (success) { action(); AppMetrica.Instance.ReportEvent("PostScores"); } });
         }
 
         public void OpenAchievements()
@@ -283,7 +288,7 @@ namespace Assets.Scripts
             if (Profile.Instance.UnlockedItems.Contains(BallId.Pikachu)) achievements.Add(GPGConstants.achievement_pookachu);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Grenade)) achievements.Add(GPGConstants.achievement_grenade);
 
-            GamesServices.PostAchievements(achievements, (success, exception) => { if (success) Social.ShowAchievementsUI(); });
+            GamesServices.PostAchievements(achievements, (success, exception) => { if (success) { Social.ShowAchievementsUI(); AppMetrica.Instance.ReportEvent("PostAchievements"); } });
         }
 
         private void UpdateSettings()
