@@ -6,6 +6,6 @@ UnityAdsSettings:
   m_Enabled: 1
   m_InitializeOnStartup: 1
   m_TestMode: 0
-  m_EnabledPlatforms: 4294967039
+  m_EnabledPlatforms: 4294967295
   m_IosGameId: 1098700
   m_AndroidGameId: 1076481

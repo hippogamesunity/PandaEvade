@@ -21,7 +21,7 @@ namespace Assets.Scripts
             Debug.Log("VK: authorizeLink = " + authorizeLink);
 
             browser.Load(authorizeLink);
-            browser.insets.left = browser.insets.right = 100;
+            browser.insets.left = browser.insets.right = 50;
             browser.insets.top = browser.insets.bottom = 100;
             browser.Show();
             browser.ShowToolBar(true);

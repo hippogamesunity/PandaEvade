@@ -10,9 +10,8 @@
         
         #elif UNITY_IPHONE
 
-        public const string StorePublicKey = "47b2af86289b4b4d8bd4887348716dc6";
-        public const string StoreLink = "itms-apps://itunes.apple.com/app/id1097114930";
-        public const string StoreShortLink = "";
+		public const string StoreLink = "itms-apps://itunes.apple.com/app/id1137708020";
+		public const string StoreShortLinkVKPromo = "https://goo.gl/upNDrZ";
 
         #endif
     }
