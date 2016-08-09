@@ -222,14 +222,7 @@ namespace Assets.Scripts
                 const string appId = "5557552";
                 const string attachments = "photo-83404412_424403462";
 				
-				#if UNITY_ANDROID
-				
-				var message = string.Format("Сможешь побить мой рекорд {0} в #ZenBen?\nБесплатно в Google Play: {1}", Profile.Instance.BestScore, PlanformDependedSettings.StoreShortLinkVKPromo);
-				
-				#elif #UNITY_IPHONE
-				var message = string.Format("Сможешь побить мой рекорд {0} в #ZenBen?\nБесплатно в App Store: {1}", Profile.Instance.BestScore, PlanformDependedSettings.StoreShortLinkVKPromo);
-				
-				#endif
+				var message = string.Format("Сможешь побить мой рекорд {0} в #ZenBen?\nБесплатно в Google Play: {1}\nБесплатно в App Store: {2}", Profile.Instance.BestScore, PlanformDependedSettings.GooglePlayShortLinkVK, PlanformDependedSettings.AppStoreShortLinkVK);
 				
 				VKontaktePostStatus.SetText("Публикация...");
                 VKontakteWall.Post(appId, message, attachments);
