@@ -1,44 +1,81 @@
+/*
+ * Version for Unity
+ * © 2015-2020 YANDEX
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * https://yandex.com/legal/appmetrica_sdk_agreement/
+ */
+
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
-public class YandexAppMetricaDummy : IYandexAppMetrica {
+public class YandexAppMetricaDummy : BaseYandexAppMetrica
+{
 
-#region IYandexAppMetrica implementation
+    #region IYandexAppMetrica implementation
 
-	public void ActivateWithAPIKey (string apiKey) { }
+    public override void ActivateWithConfiguration (YandexAppMetricaConfig config)
+    {
+    }
 
-	public void ActivateWithConfiguration (YandexAppMetricaConfig config) { }
+    public override void ResumeSession ()
+    {
+    }
 
-	public void OnResumeApplication () { }
+    public override void PauseSession ()
+    {
+    }
 
-	public void OnPauseApplication () { }
+    public override void ReportEvent (string message)
+    {
+    }
 
-	public void ReportEvent (string message) { }
-	
-	public void ReportEvent (string message, Hashtable parameters) { } 
-	
-	public void ReportError (string condition, string stackTrace) { }
-	
-	public void SetTrackLocationEnabled (bool enabled) { }
-	
-	public void SetLocation (Coordinates coordinates) { }
-	
-	public void SetSessionTimeout (uint sessionTimeoutSeconds) { }
-	
-	public void SetReportCrashesEnabled (bool enabled) { }
-	
-	public void SetCustomAppVersion (string appVersion) { }
-	
-	public void SetLoggingEnabled () { }
-	
-	public void SetEnvironmentValue (string key, string value) { }
-	
-	public bool CollectInstalledApps { get { return false; } set { } }
-	
-	public string LibraryVersion { get { return default(string); } }
-	
-	public int LibraryApiLevel { get { return default(int); } }
+    public override void ReportEvent (string message, Dictionary<string, object> parameters)
+    {
+    }
 
-#endregion
+    public override void ReportError (string condition, string stackTrace)
+    {
+    }
+
+    public override void SetLocationTracking (bool enabled)
+    {
+    }
+
+    public override void SetLocation (YandexAppMetricaConfig.Coordinates? coordinates)
+    {
+    }
+
+    public override string LibraryVersion { get { return default(string); } }
+
+    public override int LibraryApiLevel { get { return default(int); } }
+
+    public override void SetUserProfileID (string userProfileID)
+    {
+    }
+
+    public override void ReportUserProfile (YandexAppMetricaUserProfile userProfile)
+    {
+    }
+
+    public override void ReportRevenue (YandexAppMetricaRevenue revenue)
+    {
+    }
+
+    public override void SetStatisticsSending (bool enabled)
+    {
+    }
+
+    public override void SendEventsBuffer ()
+    {
+    }
+
+    public override void RequestAppMetricaDeviceID (Action<string, YandexAppMetricaRequestDeviceIDError?> action)
+    {
+    }
+
+    #endregion
 
 }

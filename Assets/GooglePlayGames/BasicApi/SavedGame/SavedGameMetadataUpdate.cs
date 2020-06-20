@@ -13,7 +13,6 @@
 //  See the License for the specific language governing permissions and
 //    limitations under the License.
 // </copyright>
-#if (UNITY_ANDROID || (UNITY_IPHONE && !NO_GPGS))
 
 namespace GooglePlayGames.BasicApi.SavedGame
 {
@@ -45,50 +44,32 @@ namespace GooglePlayGames.BasicApi.SavedGame
 
         public bool IsDescriptionUpdated
         {
-            get
-            {
-                return mDescriptionUpdated;
-            }
+            get { return mDescriptionUpdated; }
         }
 
         public string UpdatedDescription
         {
-            get
-            {
-                return mNewDescription;
-            }
+            get { return mNewDescription; }
         }
 
         public bool IsCoverImageUpdated
         {
-            get
-            {
-                return mCoverImageUpdated;
-            }
+            get { return mCoverImageUpdated; }
         }
 
         public byte[] UpdatedPngCoverImage
         {
-            get
-            {
-                return mNewPngCoverImage;
-            }
+            get { return mNewPngCoverImage; }
         }
 
         public bool IsPlayedTimeUpdated
         {
-            get
-            {
-                return mNewPlayedTime.HasValue;
-            }
+            get { return mNewPlayedTime.HasValue; }
         }
 
         public TimeSpan? UpdatedPlayedTime
         {
-            get
-            {
-                return mNewPlayedTime;
-            }
+            get { return mNewPlayedTime; }
         }
 
         public struct Builder
@@ -118,7 +99,7 @@ namespace GooglePlayGames.BasicApi.SavedGame
                 if (newPlayedTime.TotalMilliseconds > ulong.MaxValue)
                 {
                     throw new InvalidOperationException("Timespans longer than ulong.MaxValue " +
-                        "milliseconds are not allowed");
+                                                        "milliseconds are not allowed");
                 }
 
                 mNewPlayedTime = newPlayedTime;
@@ -132,4 +113,3 @@ namespace GooglePlayGames.BasicApi.SavedGame
         }
     }
 }
-#endif

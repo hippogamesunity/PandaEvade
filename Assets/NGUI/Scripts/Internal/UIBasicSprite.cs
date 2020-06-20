@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Functionality common to both NGUI and 2D sprites brought out into a single common parent.
@@ -43,7 +44,7 @@ public abstract class UIBasicSprite : UIWidget
 	[HideInInspector][SerializeField] protected Type mType = Type.Simple;
 	[HideInInspector][SerializeField] protected FillDirection mFillDirection = FillDirection.Radial360;
 	[Range(0f, 1f)]
-	[HideInInspector][SerializeField] protected float mFillAmount = 1.0f;
+	[HideInInspector][SerializeField] protected float mFillAmount = 1f;
 	[HideInInspector][SerializeField] protected bool mInvert = false;
 	[HideInInspector][SerializeField] protected Flip mFlip = Flip.Nothing;
 	[HideInInspector][SerializeField] protected bool mApplyGradient = false;
@@ -287,21 +288,13 @@ public abstract class UIBasicSprite : UIWidget
 	/// Final widget's color passed to the draw buffer.
 	/// </summary>
 
-	protected Color32 drawingColor
+	protected Color drawingColor
 	{
 		get
 		{
 			Color colF = color;
 			colF.a = finalAlpha;
 			if (premultipliedAlpha) colF = NGUITools.ApplyPMA(colF);
-
-			if (QualitySettings.activeColorSpace == ColorSpace.Linear)
-			{
-				colF.r = Mathf.GammaToLinearSpace(colF.r);
-				colF.g = Mathf.GammaToLinearSpace(colF.g);
-				colF.b = Mathf.GammaToLinearSpace(colF.b);
-				colF.a = Mathf.GammaToLinearSpace(colF.a);
-			}
 			return colF;
 		}
 	}
@@ -310,7 +303,7 @@ public abstract class UIBasicSprite : UIWidget
 	/// Fill the draw buffers.
 	/// </summary>
 
-	protected void Fill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols, Rect outer, Rect inner)
+	protected void Fill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols, Rect outer, Rect inner)
 	{
 		mOuterUV = outer;
 		mInnerUV = inner;
@@ -343,10 +336,11 @@ public abstract class UIBasicSprite : UIWidget
 	/// Regular sprite fill function is quite simple.
 	/// </summary>
 
-	void SimpleFill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols)
+	void SimpleFill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
 	{
 		Vector4 v = drawingDimensions;
 		Vector4 u = drawingUVs;
+		Color gc = drawingColor;
 
 		verts.Add(new Vector3(v.x, v.y));
 		verts.Add(new Vector3(v.x, v.w));
@@ -360,18 +354,17 @@ public abstract class UIBasicSprite : UIWidget
 
 		if (!mApplyGradient)
 		{
-			Color32 c = drawingColor;
-			cols.Add(c);
-			cols.Add(c);
-			cols.Add(c);
-			cols.Add(c);
+			cols.Add(gc);
+			cols.Add(gc);
+			cols.Add(gc);
+			cols.Add(gc);
 		}
 		else
 		{
-			AddVertexColours(cols, 1, 1);
-			AddVertexColours(cols, 1, 2);
-			AddVertexColours(cols, 2, 2);
-			AddVertexColours(cols, 2, 1);
+			AddVertexColours(cols, ref gc, 1, 1);
+			AddVertexColours(cols, ref gc, 1, 2);
+			AddVertexColours(cols, ref gc, 2, 2);
+			AddVertexColours(cols, ref gc, 2, 1);
 		}
 	}
 
@@ -379,7 +372,7 @@ public abstract class UIBasicSprite : UIWidget
 	/// Sliced sprite fill function is more complicated as it generates 9 quads instead of 1.
 	/// </summary>
 
-	void SlicedFill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols)
+	void SlicedFill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
 	{
 		Vector4 br = border * pixelSize;
 		
@@ -389,7 +382,7 @@ public abstract class UIBasicSprite : UIWidget
 			return;
 		}
 
-		Color32 c = drawingColor;
+		Color gc = drawingColor;
 		Vector4 v = drawingDimensions;
 
 		mTempPos[0].x = v.x;
@@ -461,17 +454,17 @@ public abstract class UIBasicSprite : UIWidget
 
 				if (!mApplyGradient)
 				{
-					cols.Add(c);
-					cols.Add(c);
-					cols.Add(c);
-					cols.Add(c);
+					cols.Add(gc);
+					cols.Add(gc);
+					cols.Add(gc);
+					cols.Add(gc);
 				}
 				else
 				{
-					AddVertexColours(cols, x, y);
-					AddVertexColours(cols, x, y2);
-					AddVertexColours(cols, x2, y2);
-					AddVertexColours(cols, x2, y);
+					AddVertexColours(cols, ref gc, x, y);
+					AddVertexColours(cols, ref gc, x, y2);
+					AddVertexColours(cols, ref gc, x2, y2);
+					AddVertexColours(cols, ref gc, x2, y);
 				}
 			}
 		}
@@ -483,15 +476,15 @@ public abstract class UIBasicSprite : UIWidget
 
 	[System.Diagnostics.DebuggerHidden]
 	[System.Diagnostics.DebuggerStepThrough]
-	void AddVertexColours (BetterList<Color32> cols, int x, int y)
+	void AddVertexColours (List<Color> cols, ref Color color, int x, int y)
 	{
 		if (y == 0 || y == 1)
 		{
-			cols.Add((Color32)(drawingColor * mGradientBottom));
+			cols.Add(color * mGradientBottom);
 		}
 		else if (y == 2 || y == 3)
 		{
-			cols.Add((Color32)(drawingColor * mGradientTop));
+			cols.Add(color * mGradientTop);
 		}
 	}
 
@@ -499,7 +492,7 @@ public abstract class UIBasicSprite : UIWidget
 	/// Tiled sprite fill function.
 	/// </summary>
 
-	void TiledFill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols)
+	void TiledFill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
 	{
 		Texture tex = mainTexture;
 		if (tex == null) return;
@@ -508,7 +501,7 @@ public abstract class UIBasicSprite : UIWidget
 		size *= pixelSize;
 		if (tex == null || size.x < 2f || size.y < 2f) return;
 
-		Color32 c = drawingColor;
+		Color c = drawingColor;
 		Vector4 v = drawingDimensions;
 		Vector4 u;
 
@@ -588,13 +581,13 @@ public abstract class UIBasicSprite : UIWidget
 	/// Filled sprite fill function.
 	/// </summary>
 
-	void FilledFill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols)
+	void FilledFill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
 	{
 		if (mFillAmount < 0.001f) return;
 
 		Vector4 v = drawingDimensions;
 		Vector4 u = drawingUVs;
-		Color32 c = drawingColor;
+		Color c = drawingColor;
 
 		// Horizontal and vertical filled sprites are simple -- just end the sprite prematurely
 		if (mFillDirection == FillDirection.Horizontal || mFillDirection == FillDirection.Vertical)
@@ -767,7 +760,7 @@ public abstract class UIBasicSprite : UIWidget
 	/// Advanced sprite fill function. Contributed by Nicki Hansen.
 	/// </summary>
 
-	void AdvancedFill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols)
+	void AdvancedFill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols)
 	{
 		Texture tex = mainTexture;
 		if (tex == null) return;
@@ -780,7 +773,7 @@ public abstract class UIBasicSprite : UIWidget
 			return;
 		}
 
-		Color32 c = drawingColor;
+		Color c = drawingColor;
 		Vector4 v = drawingDimensions;
 		Vector2 tileSize = new Vector2(mInnerUV.width * tex.width, mInnerUV.height * tex.height);
 		tileSize *= pixelSize;
@@ -985,15 +978,16 @@ public abstract class UIBasicSprite : UIWidget
 				}
 				else // Corner
 				{
-					if ((y == 0 && bottomType != AdvancedType.Invisible) || (y == 2 && topType != AdvancedType.Invisible) ||
-						(x == 0 && leftType != AdvancedType.Invisible) || (x == 2 && rightType != AdvancedType.Invisible))
-					{
-						Fill(verts, uvs, cols,
-							mTempPos[x].x, mTempPos[x2].x,
-							mTempPos[y].y, mTempPos[y2].y,
-							mTempUVs[x].x, mTempUVs[x2].x,
-							mTempUVs[y].y, mTempUVs[y2].y, c);
-					}
+					if (y == 0 && bottomType == AdvancedType.Invisible) continue;
+					if (y == 2 && topType == AdvancedType.Invisible) continue;
+					if (x == 0 && leftType == AdvancedType.Invisible) continue;
+					if (x == 2 && rightType == AdvancedType.Invisible) continue;
+
+					Fill(verts, uvs, cols,
+						mTempPos[x].x, mTempPos[x2].x,
+						mTempPos[y].y, mTempPos[y2].y,
+						mTempUVs[x].x, mTempUVs[x2].x,
+						mTempUVs[y].y, mTempUVs[y2].y, c);
 				}
 			}
 		}
@@ -1111,7 +1105,7 @@ public abstract class UIBasicSprite : UIWidget
 	/// Helper function that adds the specified values to the buffers.
 	/// </summary>
 
-	static void Fill (BetterList<Vector3> verts, BetterList<Vector2> uvs, BetterList<Color32> cols,
+	static void Fill (List<Vector3> verts, List<Vector2> uvs, List<Color> cols,
 		float v0x, float v1x, float v0y, float v1y, float u0x, float u1x, float u0y, float u1y, Color col)
 	{
 		verts.Add(new Vector3(v0x, v0y));

@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -42,10 +42,24 @@ public class UIPanel : UIRect
 	public bool showInPanelTool = true;
 
 	/// <summary>
-	/// Whether normals and tangents will be generated for all meshes
+	/// Whether normals and tangents will be generated for all meshes.
 	/// </summary>
 	
 	public bool generateNormals = false;
+
+	/// <summary>
+	/// Whether secondary UV coordinates will be generated for all meshes.
+	/// </summary>
+
+	public bool generateUV2 = false;
+
+#if !UNITY_4_7
+	/// <summary>
+	/// Whether generated geometry will cast shadows.
+	/// </summary>
+
+	public UIDrawCall.ShadowMode shadowMode = UIDrawCall.ShadowMode.None;
+#endif
 
 	/// <summary>
 	/// Whether widgets drawn by this panel are static (won't move). This will improve performance.
@@ -113,7 +127,7 @@ public class UIPanel : UIRect
 #if UNITY_EDITOR
 				NGUITools.SetDirty(this);
 #endif
-				UpdateDrawCalls();
+				UpdateDrawCalls(list.IndexOf(this));
 			}
 		}
 	}
@@ -154,6 +168,20 @@ public class UIPanel : UIRect
 
 	public OnClippingMoved onClipMove;
 
+	/// <summary>
+	/// There may be cases where you will want to create a custom material per-widget in order to have unique draw calls.
+	/// If that's the case, set this delegate and return your newly created material. Note that it's up to you to cache this material for the next call.
+	/// </summary>
+
+	public OnCreateMaterial onCreateMaterial;
+	public delegate Material OnCreateMaterial (UIWidget widget, Material mat);
+
+	/// <summary>
+	/// Event callback that's triggered whenever the panel creates a new draw call.
+	/// </summary>
+
+	public UIDrawCall.OnCreateDrawCall onCreateDrawCall;
+
 	// Clip texture feature contributed by the community: http://www.tasharen.com/forum/index.php?topic=9268.0
 	[HideInInspector][SerializeField] Texture2D mClipTexture = null;
 
@@ -182,7 +210,9 @@ public class UIPanel : UIRect
 	static float[] mTemp = new float[4];
 	Vector2 mMin = Vector2.zero;
 	Vector2 mMax = Vector2.zero;
+#if !UNITY_5_5_OR_NEWER
 	bool mHalfPixelOffset = false;
+#endif
 	bool mSortWidgets = false;
 	bool mUpdateScroll = false;
 
@@ -223,10 +253,13 @@ public class UIPanel : UIRect
 
 			if (mAlpha != val)
 			{
+				bool wasVisible = mAlpha > 0.001f;
 				mAlphaFrameID = -1;
 				mResized = true;
 				mAlpha = val;
-				SetDirty();
+				for (int i = 0, imax = drawCalls.Count; i < imax; ++i)
+					drawCalls[i].isDirty = true;
+				Invalidate(!wasVisible && mAlpha > 0.001f);
 			}
 		}
 	}
@@ -255,6 +288,12 @@ public class UIPanel : UIRect
 	}
 
 	/// <summary>
+	/// Whether sorting order will be used or not. Sorting order is used with Unity's 2D system.
+	/// </summary>
+
+	public bool useSortingOrder = false;
+
+	/// <summary>
 	/// Sorting order value for the panel's draw calls, to be used with Unity's 2D system.
 	/// </summary>
 
@@ -272,7 +311,7 @@ public class UIPanel : UIRect
 #if UNITY_EDITOR
 				NGUITools.SetDirty(this);
 #endif
-				UpdateDrawCalls();
+				UpdateDrawCalls(list.IndexOf(this));
 			}
 		}
 	}
@@ -308,7 +347,17 @@ public class UIPanel : UIRect
 	/// Whether the panel's drawn geometry needs to be offset by a half-pixel.
 	/// </summary>
 
-	public bool halfPixelOffset { get { return mHalfPixelOffset; } }
+	public bool halfPixelOffset
+	{
+		get
+		{
+#if UNITY_5_5_OR_NEWER
+			return false;
+#else
+			return mHalfPixelOffset;
+#endif
+		}
+	}
 
 	/// <summary>
 	/// Whether the camera is used to draw UI geometry.
@@ -338,9 +387,11 @@ public class UIPanel : UIRect
 				float pixelSize = (root != null) ? root.pixelSizeAdjustment : 1f;
 				float mod = (pixelSize / size.y) / mCam.orthographicSize;
 
-				bool x = mHalfPixelOffset;
-				bool y = mHalfPixelOffset;
-
+#if UNITY_5_5_OR_NEWER
+				bool x = false, y = false;
+#else
+				bool x = mHalfPixelOffset, y = mHalfPixelOffset;
+#endif
 				if ((Mathf.RoundToInt(size.x) & 1) == 1) x = !x;
 				if ((Mathf.RoundToInt(size.y) & 1) == 1) y = !y;
 
@@ -368,7 +419,7 @@ public class UIPanel : UIRect
 				mClipping = value;
 				mMatrixFrame = -1;
 #if UNITY_EDITOR
-				if (!Application.isPlaying) UpdateDrawCalls();
+				if (!Application.isPlaying) UpdateDrawCalls(list.IndexOf(this));
 #endif
 			}
 		}
@@ -440,7 +491,7 @@ public class UIPanel : UIRect
 				// Call the event delegate
 				if (onClipMove != null) onClipMove(this);
 #if UNITY_EDITOR
-				if (!Application.isPlaying) UpdateDrawCalls();
+				if (!Application.isPlaying) UpdateDrawCalls(list.IndexOf(this));
 #endif
 			}
 		}
@@ -479,7 +530,7 @@ public class UIPanel : UIRect
 			{
 				mClipTexture = value;
 #if UNITY_EDITOR
-				if (!Application.isPlaying) UpdateDrawCalls();
+				if (!Application.isPlaying) UpdateDrawCalls(list.IndexOf(this));
 #endif
 			}
 		}
@@ -529,7 +580,7 @@ public class UIPanel : UIRect
 				if (sv != null) sv.UpdatePosition();
 				if (onClipMove != null) onClipMove(this);
 #if UNITY_EDITOR
-				if (!Application.isPlaying) UpdateDrawCalls();
+				if (!Application.isPlaying) UpdateDrawCalls(list.IndexOf(this));
 #endif
 			}
 		}
@@ -569,7 +620,7 @@ public class UIPanel : UIRect
 			{
 				mClipSoftness = value;
 #if UNITY_EDITOR
-				if (!Application.isPlaying) UpdateDrawCalls();
+				if (!Application.isPlaying) UpdateDrawCalls(list.IndexOf(this));
 #endif
 			}
 		}
@@ -922,14 +973,15 @@ public class UIPanel : UIRect
 	{
 		base.Awake();
 
+#if !UNITY_5_5_OR_NEWER
 		mHalfPixelOffset = (Application.platform == RuntimePlatform.WindowsPlayer ||
-			Application.platform == RuntimePlatform.XBOX360 ||
+ #if !UNITY_5_4
 			Application.platform == RuntimePlatform.WindowsWebPlayer ||
-			Application.platform == RuntimePlatform.WindowsEditor);
-
-		// Only DirectX 9 needs the half-pixel offset
-		if (mHalfPixelOffset && SystemInfo.graphicsDeviceVersion.Contains("Direct3D"))
-			mHalfPixelOffset = (SystemInfo.graphicsShaderLevel < 40);
+ #endif
+			Application.platform == RuntimePlatform.WindowsEditor) &&
+			SystemInfo.graphicsDeviceVersion.Contains("Direct3D") &&
+			SystemInfo.graphicsShaderLevel < 40;
+#endif
 	}
 
 	/// <summary>
@@ -1054,16 +1106,10 @@ public class UIPanel : UIRect
 	{
 		int fc = Time.frameCount;
 
-		if (cachedTransform.hasChanged)
-		{
-			mTrans.hasChanged = false;
-			mMatrixFrame = -1;
-		}
-
-		if (mMatrixFrame != fc)
+		if (mHasMoved || mMatrixFrame != fc)
 		{
 			mMatrixFrame = fc;
-			worldToLocal = mTrans.worldToLocalMatrix;
+			worldToLocal = cachedTransform.worldToLocalMatrix;
 
 			Vector2 size = GetViewSize() * 0.5f;
 
@@ -1215,7 +1261,7 @@ public class UIPanel : UIRect
 
 	void LateUpdate ()
 	{
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_5_5_OR_NEWER
 		if (mUpdateFrame != Time.frameCount || !Application.isPlaying)
 #else
 		if (mUpdateFrame != Time.frameCount)
@@ -1237,18 +1283,18 @@ public class UIPanel : UIRect
 				if (p.renderQueue == RenderQueue.Automatic)
 				{
 					p.startingRenderQueue = rq;
-					p.UpdateDrawCalls();
+					p.UpdateDrawCalls(i);
 					rq += p.drawCalls.Count;
 				}
 				else if (p.renderQueue == RenderQueue.StartAt)
 				{
-					p.UpdateDrawCalls();
+					p.UpdateDrawCalls(i);
 					if (p.drawCalls.Count != 0)
 						rq = Mathf.Max(rq, p.startingRenderQueue + p.drawCalls.Count);
 				}
 				else // Explicit
 				{
-					p.UpdateDrawCalls();
+					p.UpdateDrawCalls(i);
 					if (p.drawCalls.Count != 0)
 						rq = Mathf.Max(rq, p.startingRenderQueue + 1);
 				}
@@ -1256,12 +1302,17 @@ public class UIPanel : UIRect
 		}
 	}
 
+	[System.NonSerialized]
+	bool mHasMoved = false;
+
 	/// <summary>
 	/// Update the panel, all of its widgets and draw calls.
 	/// </summary>
 
 	void UpdateSelf ()
 	{
+		mHasMoved = cachedTransform.hasChanged;
+
 		UpdateTransformMatrix();
 		UpdateLayers();
 		UpdateWidgets();
@@ -1292,6 +1343,12 @@ public class UIPanel : UIRect
 			mUpdateScroll = false;
 			UIScrollView sv = GetComponent<UIScrollView>();
 			if (sv != null) sv.UpdateScrollbars();
+		}
+
+		if (mHasMoved)
+		{
+			mHasMoved = false;
+			mTrans.hasChanged = false;
 		}
 	}
 
@@ -1330,12 +1387,15 @@ public class UIPanel : UIRect
 			if (w.isVisible && w.hasVertices)
 			{
 				Material mt = w.material;
+				
+				if (onCreateMaterial != null) mt = onCreateMaterial(w, mt);
+
 				Texture tx = w.mainTexture;
 				Shader sd = w.shader;
 
 				if (mat != mt || tex != tx || sdr != sd)
 				{
-					if (dc != null && dc.verts.size != 0)
+					if (dc != null && dc.verts.Count != 0)
 					{
 						drawCalls.Add(dc);
 						dc.UpdateGeometry(count);
@@ -1358,6 +1418,7 @@ public class UIPanel : UIRect
 						dc.depthStart = w.depth;
 						dc.depthEnd = dc.depthStart;
 						dc.panel = this;
+						dc.onCreateDrawCall = onCreateDrawCall;
 					}
 					else
 					{
@@ -1369,8 +1430,8 @@ public class UIPanel : UIRect
 					w.drawCall = dc;
 
 					++count;
-					if (generateNormals) w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, dc.norms, dc.tans);
-					else w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, null, null);
+					if (generateNormals) w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, dc.norms, dc.tans, generateUV2 ? dc.uv2 : null);
+					else w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, null, null, generateUV2 ? dc.uv2 : null);
 
 					if (w.mOnRender != null)
 					{
@@ -1382,7 +1443,7 @@ public class UIPanel : UIRect
 			else w.drawCall = null;
 		}
 
-		if (dc != null && dc.verts.size != 0)
+		if (dc != null && dc.verts.Count != 0)
 		{
 			drawCalls.Add(dc);
 			dc.UpdateGeometry(count);
@@ -1423,8 +1484,8 @@ public class UIPanel : UIRect
 					{
 						++count;
 						
-						if (generateNormals) w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, dc.norms, dc.tans);
-						else w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, null, null);
+						if (generateNormals) w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, dc.norms, dc.tans, generateUV2 ? dc.uv2 : null);
+						else w.WriteToBuffers(dc.verts, dc.uvs, dc.cols, null, null, generateUV2 ? dc.uv2 : null);
 
 						if (w.mOnRender != null)
 						{
@@ -1437,7 +1498,7 @@ public class UIPanel : UIRect
 				++i;
 			}
 
-			if (dc.verts.size != 0)
+			if (dc.verts.Count != 0)
 			{
 				dc.UpdateGeometry(count);
 				dc.onRender = mOnRender;
@@ -1452,7 +1513,7 @@ public class UIPanel : UIRect
 	/// Update all draw calls associated with the panel.
 	/// </summary>
 
-	void UpdateDrawCalls ()
+	void UpdateDrawCalls (int sortOrder)
 	{
 		Transform trans = cachedTransform;
 		bool isUI = usedForUI;
@@ -1512,9 +1573,12 @@ public class UIPanel : UIRect
 			dc.renderQueue = (renderQueue == RenderQueue.Explicit) ? startingRenderQueue : startingRenderQueue + i;
 			dc.alwaysOnScreen = alwaysOnScreen &&
 				(mClipping == UIDrawCall.Clipping.None || mClipping == UIDrawCall.Clipping.ConstrainButDontClip);
-			dc.sortingOrder = mSortingOrder;
-			dc.sortingLayerName = mSortingLayerName;
+			dc.sortingOrder = useSortingOrder ? ((mSortingOrder == 0 && renderQueue == RenderQueue.Automatic) ? sortOrder : mSortingOrder) : 0;
+			dc.sortingLayerName = useSortingOrder ? mSortingLayerName : null;
 			dc.clipTexture = mClipTexture;
+#if !UNITY_4_7
+			dc.shadowMode = shadowMode;
+#endif
 		}
 	}
 
@@ -1613,14 +1677,12 @@ public class UIPanel : UIRect
 					}
 				}
 #endif
-				
-
 				// First update the widget's transform
-				if (w.UpdateTransform(frame) || mResized)
+				if (w.UpdateTransform(frame) || mResized || (mHasMoved && !alwaysOnScreen))
 				{
 					// Only proceed to checking the widget's visibility if it actually moved
 					bool vis = forceVisible || (w.CalculateCumulativeAlpha(frame) > 0.001f);
-					w.UpdateVisibility(vis, forceVisible || ((clipped || w.hideIfOffScreen) ? IsVisible(w) : true));
+					w.UpdateVisibility(vis, forceVisible || alwaysOnScreen || ((clipped || w.hideIfOffScreen) ? IsVisible(w) : true));
 				}
 				
 				// Update the widget's geometry if necessary
@@ -1652,9 +1714,10 @@ public class UIPanel : UIRect
 
 	public UIDrawCall FindDrawCall (UIWidget w)
 	{
-		Material mat = w.material;
-		Texture tex = w.mainTexture;
-		int depth = w.depth;
+		var mat = w.material;
+		var tex = w.mainTexture;
+		var shader = w.shader;
+		var depth = w.depth;
 
 		for (int i = 0; i < drawCalls.Count; ++i)
 		{
@@ -1664,7 +1727,7 @@ public class UIPanel : UIRect
 
 			if (dcStart <= depth && dcEnd >= depth)
 			{
-				if (dc.baseMaterial == mat && dc.mainTexture == tex)
+				if (dc.baseMaterial == mat && dc.shader == shader && dc.mainTexture == tex)
 				{
 					if (w.isVisible)
 					{

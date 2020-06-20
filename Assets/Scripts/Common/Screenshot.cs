@@ -20,7 +20,7 @@ namespace Assets.Scripts.Common
         {
             var filename = Md5.Encode(Convert.ToString(DateTime.Now)) + ".png";
 
-            Application.CaptureScreenshot(filename, SuperSize);
+            ScreenCapture.CaptureScreenshot(filename, SuperSize);
             Debug.Log(filename);
         }
     }

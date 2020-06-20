@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ using System.Collections.Generic;
 /// Info,"Localization Example","Par exemple la localisation"
 /// </summary>
 
-public static class Localization
+static public class Localization
 {
 	public delegate byte[] LoadFunction (string path);
 	public delegate void OnLocalizeNotification ();
@@ -474,7 +474,7 @@ public static class Localization
 	/// Localize the specified value.
 	/// </summary>
 
-	static public string Get (string key)
+	static public string Get (string key, bool warnIfMissing = true)
 	{
 		if (string.IsNullOrEmpty(key)) return null;
 
@@ -512,7 +512,6 @@ public static class Localization
 		string[] vals;
 
 		UICamera.ControlScheme scheme = UICamera.currentScheme;
-
 
 		if (scheme == UICamera.ControlScheme.Touch)
 		{
@@ -554,7 +553,7 @@ public static class Localization
 		if (mOldDictionary.TryGetValue(key, out val)) return val;
 
 #if UNITY_EDITOR
-		Debug.LogWarning("Localization key not found: '" + key + "' for language " + lang);
+		if (warnIfMissing) Debug.LogWarning("Localization key not found: '" + key + "' for language " + lang);
 #endif
 		return key;
 	}

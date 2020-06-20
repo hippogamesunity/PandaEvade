@@ -1,4 +1,4 @@
-﻿// <copyright file="PlayGamesClientConfiguration.cs" company="Google Inc.">
+// <copyright file="PlayGamesClientConfiguration.cs" company="Google Inc.">
 // Copyright (C) 2014 Google Inc.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +13,15 @@
 //  See the License for the specific language governing permissions and
 //    limitations under the License.
 // </copyright>
-#if (UNITY_ANDROID || (UNITY_IPHONE && !NO_GPGS))
+
+#if UNITY_ANDROID
 
 namespace GooglePlayGames.BasicApi
 {
     using GooglePlayGames.BasicApi.Multiplayer;
     using GooglePlayGames.OurUtils;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Provides configuration for <see cref="PlayGamesPlatform"/>. If you wish to use either Saved
@@ -32,7 +35,8 @@ namespace GooglePlayGames.BasicApi
         /// The default configuration.
         /// </summary>
         public static readonly PlayGamesClientConfiguration DefaultConfiguration =
-            new Builder().Build();
+            new Builder()
+                .Build();
 
         /// <summary>
         /// Flag indicating to enable saved games API.
@@ -40,9 +44,39 @@ namespace GooglePlayGames.BasicApi
         private readonly bool mEnableSavedGames;
 
         /// <summary>
-        /// Flag indicating to request use of a player's Google+ social graph.
+        /// Array of scopes to be requested from user. None is considered as 'games_lite'.
         /// </summary>
-        private readonly bool mRequireGooglePlus;
+        private readonly string[] mScopes;
+
+        /// <summary>
+        /// The flag to indicate a server auth code should be requested when authenticating.
+        /// </summary>
+        private readonly bool mRequestAuthCode;
+
+        /// <summary>
+        /// The flag indicating the auth code should be refresh, causing re-consent and issuing a new refresh token.
+        /// </summary>
+        private readonly bool mForceRefresh;
+
+        /// <summary>
+        /// The flag indicating popup UIs should be hidden.
+        /// </summary>
+        private readonly bool mHidePopups;
+
+        /// <summary>
+        /// The flag indicating the email address should returned when authenticating.
+        /// </summary>
+        private readonly bool mRequestEmail;
+
+        /// <summary>
+        /// The flag indicating the id token should be returned when authenticating.
+        /// </summary>
+        private readonly bool mRequestIdToken;
+
+        /// <summary>
+        /// The account name to attempt to use when signing in.  Null indicates use the default.
+        /// </summary>
+        private readonly string mAccountName;
 
         /// <summary>
         /// The invitation delegate.
@@ -55,12 +89,6 @@ namespace GooglePlayGames.BasicApi
         private readonly MatchDelegate mMatchDelegate;
 
         /// <summary>
-        /// The permission rationale message to show in Android when requesting
-        /// the GET_ACCOUNTS permission to get email and tokens.
-        /// </summary>
-        private readonly string mPermissionRationale;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GooglePlayGames.BasicApi.PlayGamesClientConfiguration"/> struct.
         /// </summary>
         /// <param name="builder">Builder for this configuration.</param>
@@ -69,8 +97,13 @@ namespace GooglePlayGames.BasicApi
             this.mEnableSavedGames = builder.HasEnableSaveGames();
             this.mInvitationDelegate = builder.GetInvitationDelegate();
             this.mMatchDelegate = builder.GetMatchDelegate();
-            this.mPermissionRationale = builder.GetPermissionRationale();
-            this.mRequireGooglePlus = builder.HasRequireGooglePlus();
+            this.mScopes = builder.getScopes();
+            this.mHidePopups = builder.IsHidingPopups();
+            this.mRequestAuthCode = builder.IsRequestingAuthCode();
+            this.mForceRefresh = builder.IsForcingRefresh();
+            this.mRequestEmail = builder.IsRequestingEmail();
+            this.mRequestIdToken = builder.IsRequestingIdToken();
+            this.mAccountName = builder.GetAccountName();
         }
 
         /// <summary>
@@ -80,23 +113,67 @@ namespace GooglePlayGames.BasicApi
         /// <value><c>true</c> if enable saved games; otherwise, <c>false</c>.</value>
         public bool EnableSavedGames
         {
-            get
-            {
-                return mEnableSavedGames;
-            }
+            get { return mEnableSavedGames; }
+        }
+
+        public bool IsHidingPopups
+        {
+            get { return mHidePopups; }
+        }
+
+        public bool IsRequestingAuthCode
+        {
+            get { return mRequestAuthCode; }
+        }
+
+        public bool IsForcingRefresh
+        {
+            get { return mForceRefresh; }
+        }
+
+        public bool IsRequestingEmail
+        {
+            get { return mRequestEmail; }
+        }
+
+        public bool IsRequestingIdToken
+        {
+            get { return mRequestIdToken; }
+        }
+
+        public string AccountName
+        {
+            get { return mAccountName; }
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="GooglePlayGames.BasicApi.PlayGamesClientConfiguration"/>
-        /// requests a player's Google+ social graph.
+        /// Gets a array of scopes to be requested from the user.
         /// </summary>
-        /// <value><c>true</c> if requests Google+ social graph; otherwise, <c>false</c>.</value>
-        public bool RequireGooglePlus
+        /// <value>String array of scopes.</value>
+        public string[] Scopes
         {
-            get
+            get { return mScopes; }
+        }
+
+        public static bool operator ==(PlayGamesClientConfiguration c1, PlayGamesClientConfiguration c2)
+        {
+            if (c1.EnableSavedGames != c2.EnableSavedGames ||
+                c1.IsForcingRefresh != c2.IsForcingRefresh ||
+                c1.IsHidingPopups != c2.IsHidingPopups ||
+                c1.IsRequestingEmail != c2.IsRequestingEmail ||
+                c1.IsRequestingAuthCode != c2.IsRequestingAuthCode ||
+                !c1.Scopes.SequenceEqual(c2.Scopes) ||
+                c1.AccountName != c2.AccountName)
             {
-                return mRequireGooglePlus;
+                return false;
             }
+
+            return true;
+        }
+
+        public static bool operator !=(PlayGamesClientConfiguration c1, PlayGamesClientConfiguration c2)
+        {
+            return !(c1 == c2);
         }
 
         /// <summary>
@@ -105,10 +182,7 @@ namespace GooglePlayGames.BasicApi
         /// <value>The invitation delegate.</value>
         public InvitationReceivedDelegate InvitationDelegate
         {
-            get
-            {
-                return mInvitationDelegate;
-            }
+            get { return mInvitationDelegate; }
         }
 
         /// <summary>
@@ -117,22 +191,7 @@ namespace GooglePlayGames.BasicApi
         /// <value>The match delegate.</value>
         public MatchDelegate MatchDelegate
         {
-            get
-            {
-                return mMatchDelegate;
-            }
-        }
-
-        /// <summary>
-        /// Gets the permission rationale.
-        /// </summary>
-        /// <value>The permission rationale.</value>
-        public string PermissionRationale
-        {
-            get
-            {
-                return mPermissionRationale;
-            }
+            get { return mMatchDelegate; }
         }
 
         /// <summary>
@@ -146,29 +205,52 @@ namespace GooglePlayGames.BasicApi
             private bool mEnableSaveGames = false;
 
             /// <summary>
-            /// The flag to request Google+. Default is false.
+            /// The scopes to request from the user. Default is none.
             /// </summary>
-            private bool mRequireGooglePlus = false;
+            private List<string> mScopes = null;
+
+            /// <summary>
+            /// The flag indicating that popup UI should be hidden.
+            /// </summary>
+            private bool mHidePopups = false;
+
+            /// <summary>
+            /// The flag to indicate a server auth code should be requested when authenticating.
+            /// </summary>
+            private bool mRequestAuthCode = false;
+
+            /// <summary>
+            /// The flag indicating the auth code should be refresh, causing re-consent and issuing a new refresh token.
+            /// </summary>
+            private bool mForceRefresh = false;
+
+            /// <summary>
+            /// The flag indicating the email address should returned when authenticating.
+            /// </summary>
+            private bool mRequestEmail = false;
+
+            /// <summary>
+            /// The flag indicating the id token should be returned when authenticating.
+            /// </summary>
+            private bool mRequestIdToken = false;
+
+            /// <summary>
+            /// The account name to use as a default when authenticating.
+            /// </summary>
+            /// <remarks>
+            /// This is only used when requesting auth code or id token.
+            /// </remarks>
+            private string mAccountName = null;
 
             /// <summary>
             /// The invitation delegate.  Default is a no-op;
             /// </summary>
-            private InvitationReceivedDelegate mInvitationDelegate = delegate
-            {
-            };
+            private InvitationReceivedDelegate mInvitationDelegate = delegate { };
 
             /// <summary>
             /// The match delegate.  Default is a no-op.
             /// </summary>
-            private MatchDelegate mMatchDelegate = delegate
-            {
-            };
-
-            /// <summary>
-            /// The rationale for the GET_ACCOUNTS permission in android.
-            /// Default is empty.
-            /// </summary>
-            private string mRationale;
+            private MatchDelegate mMatchDelegate = delegate { };
 
             /// <summary>
             /// Enables the saved games.
@@ -181,17 +263,55 @@ namespace GooglePlayGames.BasicApi
             }
 
             /// <summary>
-            /// Requests use of the player's Google+ social graph.
+            /// Enables hiding popups.  This is recommended for VR apps.
+            /// </summary>
+            /// <returns>The hide popups.</returns>
+            public Builder EnableHidePopups()
+            {
+                mHidePopups = true;
+                return this;
+            }
+
+            public Builder RequestServerAuthCode(bool forceRefresh)
+            {
+                mRequestAuthCode = true;
+                mForceRefresh = forceRefresh;
+                return this;
+            }
+
+            public Builder RequestEmail()
+            {
+                mRequestEmail = true;
+                return this;
+            }
+
+            public Builder RequestIdToken()
+            {
+                mRequestIdToken = true;
+                return this;
+            }
+
+            public Builder SetAccountName(string accountName)
+            {
+                mAccountName = accountName;
+                return this;
+            }
+
+            /// <summary>
+            /// Requests an Oauth scope from the user.
             /// </summary>
             /// <remarks>
-            /// Set this to request use of the player's Google+ social graph. Setting
-            /// this will require Android users to have a Google+ profile in order
-            /// to be able to sign in (on iOS, users must always have one).
+            /// Not setting one will default to 'games_lite' and will not show a consent
+            /// dialog to the user. Valid examples are 'profile' and 'email'.
+            /// Full list: https://developers.google.com/identity/protocols/googlescopes
+            /// To exchange the auth code with an id_token (or user id) on your server,
+            /// you must add at least one scope.
             /// </remarks>
             /// <returns>The builder.</returns>
-            public Builder RequireGooglePlus()
+            public Builder AddOauthScope(string scope)
             {
-                mRequireGooglePlus = true;
+                if (mScopes == null) mScopes = new List<string>();
+                mScopes.Add(scope);
                 return this;
             }
 
@@ -220,25 +340,11 @@ namespace GooglePlayGames.BasicApi
             }
 
             /// <summary>
-            /// Adds the permission rationale.  This is used only in Android
-            /// when accessing the email or tokens of the player.  This is the
-            /// rationale for asking for the GET_ACCOUNTS permission.
-            /// </summary>
-            /// <returns>The permission rationale.</returns>
-            /// <param name="rationale">Rationale to display.</param>
-            public Builder WithPermissionRationale(string rationale)
-            {
-                this.mRationale = rationale;
-                return this;
-            }
-
-            /// <summary>
             /// Build this instance.
             /// </summary>
             /// <returns>the client configuration instance</returns>
             public PlayGamesClientConfiguration Build()
             {
-                mRequireGooglePlus = GameInfo.RequireGooglePlus();
                 return new PlayGamesClientConfiguration(this);
             }
 
@@ -251,13 +357,43 @@ namespace GooglePlayGames.BasicApi
                 return mEnableSaveGames;
             }
 
-            /// <summary>
-            /// Determines whether this instance has Google+ required.
-            /// </summary>
-            /// <returns><c>true</c> if this instance has Google+ required; otherwise, <c>false</c>.</returns>
-            internal bool HasRequireGooglePlus()
+            internal bool IsRequestingAuthCode()
             {
-                return mRequireGooglePlus;
+                return mRequestAuthCode;
+            }
+
+            internal bool IsHidingPopups()
+            {
+                return mHidePopups;
+            }
+
+            internal bool IsForcingRefresh()
+            {
+                return mForceRefresh;
+            }
+
+            internal bool IsRequestingEmail()
+            {
+                return mRequestEmail;
+            }
+
+            internal bool IsRequestingIdToken()
+            {
+                return mRequestIdToken;
+            }
+
+            internal string GetAccountName()
+            {
+                return mAccountName;
+            }
+
+            /// <summary>
+            /// Gets the Oauth scopes to be requested from the user.
+            /// </summary>
+            /// <returns>String array of scopes.</returns>
+            internal string[] getScopes()
+            {
+                return mScopes == null ? new string[0] : mScopes.ToArray();
             }
 
             /// <summary>
@@ -277,15 +413,29 @@ namespace GooglePlayGames.BasicApi
             {
                 return mInvitationDelegate;
             }
+        }
 
-            /// <summary>
-            /// Gets the permission rationale.
-            /// </summary>
-            /// <returns>The permission rationale.</returns>
-            internal string GetPermissionRationale()
+        public override int GetHashCode()
+        {
+            unchecked
             {
-                return mRationale;
+                int hash = 17;
+                hash = hash * 31 + EnableSavedGames.GetHashCode();
+                hash = hash * 31 + IsForcingRefresh.GetHashCode();
+                hash = hash * 31 + IsHidingPopups.GetHashCode();
+                hash = hash * 31 + IsRequestingEmail.GetHashCode();
+                hash = hash * 31 + IsRequestingAuthCode.GetHashCode();
+                hash = hash * 31 + Scopes.GetHashCode();
+                hash = hash * 31 + AccountName.GetHashCode();
+                hash = hash * 31 + InvitationDelegate.GetHashCode();
+                hash = hash * 31 + MatchDelegate.GetHashCode();
+                return hash;
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this == (PlayGamesClientConfiguration) obj;
         }
     }
 }

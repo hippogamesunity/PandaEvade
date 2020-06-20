@@ -13,7 +13,6 @@
 //  See the License for the specific language governing permissions and
 //    limitations under the License.
 // </copyright>
-#if (UNITY_ANDROID || (UNITY_IPHONE && !NO_GPGS))
 
 namespace GooglePlayGames.BasicApi.Nearby
 {
@@ -34,27 +33,17 @@ namespace GooglePlayGames.BasicApi.Nearby
 
         public bool Succeeded
         {
-            get
-            {
-                return mStatus == ResponseStatus.Success;
-            }
+            get { return mStatus == ResponseStatus.Success; }
         }
 
         public ResponseStatus Status
         {
-            get
-            {
-                return mStatus;
-            }
+            get { return mStatus; }
         }
 
         public string LocalEndpointName
         {
-            get
-            {
-                return mLocalEndpointName;
-            }
+            get { return mLocalEndpointName; }
         }
     }
 }
-#endif

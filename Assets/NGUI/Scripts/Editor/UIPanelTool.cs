@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEditor;
 using UnityEngine;
@@ -214,7 +214,7 @@ public class UIPanelTool : EditorWindow
 		if (ent != null)
 		{
 			GUI.backgroundColor = ent.panel == selected ? Color.white : new Color(0.8f, 0.8f, 0.8f);
-			GUILayout.BeginHorizontal("AS TextArea", GUILayout.MinHeight(20f));
+			GUILayout.BeginHorizontal("TextArea", GUILayout.MinHeight(20f));
 			GUI.backgroundColor = Color.white;
 		}
 		else

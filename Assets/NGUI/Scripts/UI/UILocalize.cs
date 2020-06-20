@@ -1,7 +1,7 @@
-//----------------------------------------------
+//-------------------------------------------------
 //            NGUI: Next-Gen UI kit
-// Copyright © 2011-2016 Tasharen Entertainment
-//----------------------------------------------
+// Copyright © 2011-2017 Tasharen Entertainment Inc
+//-------------------------------------------------
 
 using UnityEngine;
 
@@ -78,7 +78,7 @@ public class UILocalize : MonoBehaviour
 	/// Localize the widget on start.
 	/// </summary>
 
-	void Start ()
+	public void Start ()
 	{
 #if UNITY_EDITOR
 		if (!Application.isPlaying) return;

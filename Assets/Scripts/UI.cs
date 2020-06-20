@@ -21,8 +21,6 @@ namespace Assets.Scripts
         public UILabel Score;
         public UILabel MaxScore;
         public UILabel Result;
-        public GameObject VKontaktePostButton;
-        public UILabel VKontaktePostStatus;
         public UISprite SoundButton;
         public UISprite PauseButton;
         public GameObject AbortButton;
@@ -34,28 +32,8 @@ namespace Assets.Scripts
         {
             UpdateSettings();
             OpenMenu();
-
-            if (Localization.language == "Russian")
-            {
-                VKontaktePostButton.SetActive(true);
-                VKontakteWall.OnSuccess += () =>
-                {
-                    _repostTime = Time.time;
-                    VKontaktePostStatus.SetText("Опубликовано");
-                    AppMetrica.Instance.ReportEvent("VKPostSuccess");
-                };
-                VKontakteWall.OnError += error =>
-                {
-                    VKontaktePostStatus.SetText("Ошибка при публикации");
-                    AppMetrica.Instance.ReportEvent("VKPostError");
-                };
-            }
-            else
-            {
-                VKontaktePostButton.SetActive(false);
-            }
-
             StartCoroutine(SwipeLoop(1));
+            Advertisement.Initialize(Application.platform == RuntimePlatform.Android ? "1076481" : "1098700");
         }
 
         private bool _forward;
@@ -131,8 +109,6 @@ namespace Assets.Scripts
 
         public void OpenResult()
         {
-            VKontaktePostStatus.SetText(null);
-
             if (Profile.Instance.UnlockedItems.Contains(Engine.Panda.Item))
             {
                 ResultPanel.Show();
@@ -144,7 +120,7 @@ namespace Assets.Scripts
                 UnlockedItem.spriteName = Engine.Panda.Item.ToString();
                 ItemUnlockedPanel.Show();
                 AudioPlayer.Instance.PlayEffect(AudioPlayer.Instance.ItemUnlocked);
-                AppMetrica.Instance.ReportEvent("ItemUnlocked", new Hashtable { { "Item", Engine.Panda.Item.ToString() } });
+                AppMetrica.Instance.ReportEvent("ItemUnlocked", new Dictionary<string, object> { { "Item", Engine.Panda.Item.ToString() } });
             }
         }
 
@@ -215,24 +191,6 @@ namespace Assets.Scripts
             }
         }
 
-        public void VKontaktePost()
-        {
-            if (Time.time - _repostTime > 10)
-            {
-                const string appId = "5557552";
-                const string attachments = "photo-83404412_424403462";
-				
-				var message = string.Format("Сможешь побить мой рекорд {0} в #ZenBen?\nБесплатно в Google Play: {1}\nБесплатно в App Store: {2}", Profile.Instance.BestScore, PlanformDependedSettings.GooglePlayShortLinkVK, PlanformDependedSettings.AppStoreShortLinkVK);
-				
-				VKontaktePostStatus.SetText("Публикация...");
-                VKontakteWall.Post(appId, message, attachments);
-            }
-            else
-            {
-                VKontaktePostStatus.SetText("Опубликовано");
-            }
-        }
-
         public void Rate()
         {
             Application.OpenURL(PlanformDependedSettings.StoreLink);
@@ -269,7 +227,7 @@ namespace Assets.Scripts
             var achievements = new List<string>();
 
             if (Profile.Instance.UnlockedItems.Contains(BallId.Beach)) achievements.Add(GPGConstants.achievement_beach_ball);
-            if (Profile.Instance.UnlockedItems.Contains(BallId.Tennis)) achievements.Add(GPGConstants.achievement_tennis);
+            if (Profile.Instance.UnlockedItems.Contains(BallId.Tennis)) achievements.Add(GPGConstants.achievement_tennis_ball);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Tomato)) achievements.Add(GPGConstants.achievement_tomato);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Boomerang)) achievements.Add(GPGConstants.achievement_boomerang);
             if (Profile.Instance.UnlockedItems.Contains(BallId.Rugby)) achievements.Add(GPGConstants.achievement_rugby_ball);

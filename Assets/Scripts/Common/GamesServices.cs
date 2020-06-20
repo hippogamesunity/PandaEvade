@@ -118,14 +118,11 @@ namespace Assets.Scripts.Common
 
                 #if UNITY_ANDROID
 
-                if (!Social.localUser.authenticated)
-                {
-                    var config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder().Build();
+                var config = new GooglePlayGames.BasicApi.PlayGamesClientConfiguration.Builder().Build();
 
-                    GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
-                    GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
-                    GooglePlayGames.PlayGamesPlatform.Activate();
-                }
+                GooglePlayGames.PlayGamesPlatform.InitializeInstance(config);
+                GooglePlayGames.PlayGamesPlatform.DebugLogEnabled = true;
+                GooglePlayGames.PlayGamesPlatform.Activate();
 
                 #endif
 

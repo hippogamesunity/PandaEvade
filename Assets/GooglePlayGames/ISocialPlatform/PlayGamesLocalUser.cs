@@ -13,7 +13,8 @@
 //  See the License for the specific language governing permissions and
 //    limitations under the License.
 // </copyright>
-#if (UNITY_ANDROID || (UNITY_IPHONE && !NO_GPGS))
+
+#if UNITY_ANDROID
 
 namespace GooglePlayGames
 {
@@ -53,7 +54,25 @@ namespace GooglePlayGames
         /// Authenticates the local user. Equivalent to calling
         /// <see cref="PlayGamesPlatform.Authenticate" />.
         /// </summary>
+        public void Authenticate(Action<bool, string> callback)
+        {
+            mPlatform.Authenticate(callback);
+        }
+
+        /// <summary>
+        /// Authenticates the local user. Equivalent to calling
+        /// <see cref="PlayGamesPlatform.Authenticate" />.
+        /// </summary>
         public void Authenticate(Action<bool> callback, bool silent)
+        {
+            mPlatform.Authenticate(callback, silent);
+        }
+
+        /// <summary>
+        /// Authenticates the local user. Equivalent to calling
+        /// <see cref="PlayGamesPlatform.Authenticate" />.
+        /// </summary>
+        public void Authenticate(Action<bool, string> callback, bool silent)
         {
             mPlatform.Authenticate(callback, silent);
         }
@@ -71,25 +90,15 @@ namespace GooglePlayGames
         /// </summary>
         public IUserProfile[] friends
         {
-            get
-            {
-                return mPlatform.GetFriends();
-            }
+            get { return mPlatform.GetFriends(); }
         }
 
         /// <summary>
         /// Gets an id token for the user.
-        /// NOTE: This property can only be accessed using the main Unity thread.
         /// </summary>
-        /// <param name="idTokenCallback"> A callback to be invoked after token is retrieved. Will be passed null value
-        /// on failure. </param>
-        [Obsolete("Use PlayGamesPlatform.GetServerAuthCode()")]
-        public void GetIdToken(Action<string> idTokenCallback)
+        public string GetIdToken()
         {
-            if(authenticated)
-                mPlatform.GetIdToken(idTokenCallback);
-            else
-                idTokenCallback(null);
+            return mPlatform.GetIdToken();
         }
 
         /// <summary>
@@ -100,10 +109,7 @@ namespace GooglePlayGames
         /// </returns>
         public bool authenticated
         {
-            get
-            {
-                return mPlatform.IsAuthenticated();
-            }
+            get { return mPlatform.IsAuthenticated(); }
         }
 
         /// <summary>
@@ -111,10 +117,7 @@ namespace GooglePlayGames
         /// </summary>
         public bool underage
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
@@ -136,6 +139,7 @@ namespace GooglePlayGames
                         ResetIdentity(retval, mPlatform.GetUserId(), mPlatform.GetUserImageUrl());
                     }
                 }
+
                 return retval;
             }
         }
@@ -164,35 +168,18 @@ namespace GooglePlayGames
                         ResetIdentity(mPlatform.GetUserDisplayName(), retval, mPlatform.GetUserImageUrl());
                     }
                 }
+
                 return retval;
             }
         }
 
-        /// <summary>
-        /// Gets an access token for the user.
-        /// NOTE: This property can only be accessed using the main Unity thread.
-        /// </summary>
-        /// <returns>
-        /// An id token for the user.
-        /// </returns>
-        [Obsolete("Use PlayGamesPlatform.GetServerAuthCode()")]
-        public string accessToken
-        {
-            get
-            {
-                return authenticated ? mPlatform.GetAccessToken() : string.Empty;
-            }
-        }
 
         /// <summary>
         /// Returns true (since this is the local user).
         /// </summary>
         public new bool isFriend
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
@@ -201,10 +188,7 @@ namespace GooglePlayGames
         /// </summary>
         public new UserState state
         {
-            get
-            {
-                return UserState.Online;
-            }
+            get { return UserState.Online; }
         }
 
 
@@ -222,6 +206,7 @@ namespace GooglePlayGames
                             mPlatform.GetUserId(), retval);
                     }
                 }
+
                 return retval;
             }
         }
@@ -247,6 +232,7 @@ namespace GooglePlayGames
                     emailAddress = mPlatform.GetUserEmail();
                     emailAddress = emailAddress ?? string.Empty;
                 }
+
                 return authenticated ? emailAddress : string.Empty;
             }
         }
@@ -260,10 +246,10 @@ namespace GooglePlayGames
             if (mStats == null || !mStats.Valid)
             {
                 mPlatform.GetPlayerStats((rc, stats) =>
-                    {
-                        mStats = stats;
-                        callback(rc, stats);
-                    });
+                {
+                    mStats = stats;
+                    callback(rc, stats);
+                });
             }
             else
             {

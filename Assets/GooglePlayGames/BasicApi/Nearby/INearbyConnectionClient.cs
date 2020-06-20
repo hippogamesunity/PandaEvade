@@ -13,15 +13,17 @@
 //  See the License for the specific language governing permissions and
 //    limitations under the License.
 // </copyright>
-#if (UNITY_ANDROID || (UNITY_IPHONE && !NO_GPGS))
+
 namespace GooglePlayGames.BasicApi.Nearby
 {
     using System;
     using System.Collections.Generic;
 
+    // move this inside IMessageListener and IDiscoveryListener are always declared.
+#if UNITY_ANDROID
+
     public interface INearbyConnectionClient
     {
-
         int MaxUnreliableMessagePayloadLength();
 
         int MaxReliableMessagePayloadLength();
@@ -31,19 +33,19 @@ namespace GooglePlayGames.BasicApi.Nearby
         void SendUnreliable(List<string> recipientEndpointIds, byte[] payload);
 
         void StartAdvertising(string name, List<string> appIdentifiers,
-                              TimeSpan? advertisingDuration, Action<AdvertisingResult> resultCallback,
-                              Action<ConnectionRequest> connectionRequestCallback);
+            TimeSpan? advertisingDuration, Action<AdvertisingResult> resultCallback,
+            Action<ConnectionRequest> connectionRequestCallback);
 
         void StopAdvertising();
 
         void SendConnectionRequest(string name, string remoteEndpointId, byte[] payload,
-                                   Action<ConnectionResponse> responseCallback, IMessageListener listener);
+            Action<ConnectionResponse> responseCallback, IMessageListener listener);
 
         void AcceptConnectionRequest(string remoteEndpointId, byte[] payload,
-                                     IMessageListener listener);
+            IMessageListener listener);
 
         void StartDiscovery(string serviceId, TimeSpan? advertisingTimeout,
-                            IDiscoveryListener listener);
+            IDiscoveryListener listener);
 
         void StopDiscovery(string serviceId);
 
@@ -53,19 +55,16 @@ namespace GooglePlayGames.BasicApi.Nearby
 
         void StopAllConnections();
 
-        string LocalEndpointId();
-
-        string LocalDeviceId();
-
         string GetAppBundleId();
 
         string GetServiceId();
     }
+#endif
 
     public interface IMessageListener
     {
         void OnMessageReceived(string remoteEndpointId, byte[] data,
-                       bool isReliableMessage);
+            bool isReliableMessage);
 
         void OnRemoteEndpointDisconnected(string remoteEndpointId);
     }
@@ -77,4 +76,3 @@ namespace GooglePlayGames.BasicApi.Nearby
         void OnEndpointLost(string lostEndpointId);
     }
 }
-#endif

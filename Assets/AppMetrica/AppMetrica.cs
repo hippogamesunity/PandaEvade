@@ -1,3 +1,11 @@
+/*
+ * Version for Unity
+ * © 2015-2020 YANDEX
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * https://yandex.com/legal/appmetrica_sdk_agreement/
+ */
+
 // Uncomment the following line to disable location tracking
 // #define APP_METRICA_TRACK_LOCATION_DISABLED
 // or just add APP_METRICA_TRACK_LOCATION_DISABLED into
@@ -8,149 +16,146 @@ using System.Collections;
 
 public class AppMetrica : MonoBehaviour
 {
-	private class LogEvent 
-	{
-		public string Condition;
-		public string StackTrace;
-	}
+    public const string VERSION = "3.5.0";
 
-	[SerializeField]
-	public string APIKey;
-	
-	[SerializeField]
-	private bool ExceptionsReporting = true;
+    [SerializeField]
+    public string ApiKey;
 
-	[SerializeField]
-	private uint SessionTimeoutSec = 10;
+    [SerializeField]
+    private bool ExceptionsReporting = true;
 
-#if !APP_METRICA_TRACK_LOCATION_DISABLED
-	[SerializeField]
-	private bool TrackLocation = true;
-#endif
+    [SerializeField]
+    private uint SessionTimeoutSec = 10;
 
-	[SerializeField]
-	private bool LoggingEnabled = true;
-	
-	private static bool _isInitialized = false;
-	private ArrayList _handledLogEvents = new ArrayList();
-	private bool _actualPauseStatus = false;
+    [SerializeField]
+    private bool LocationTracking = true;
 
-	private static IYandexAppMetrica _metrica = null;
-	private static object syncRoot = new Object();
-	public static IYandexAppMetrica Instance 
-	{
-		get {
-			if (_metrica == null) {
-				lock (syncRoot) {
+    [SerializeField]
+    private bool Logs = true;
+
+    [SerializeField]
+    private bool HandleFirstActivationAsUpdate = false;
+
+    [SerializeField]
+    private bool StatisticsSending = true;
+
+    private static bool _isInitialized = false;
+    private bool _actualPauseStatus = false;
+
+    private static IYandexAppMetrica _metrica = null;
+    private static object syncRoot = new Object ();
+
+    public static IYandexAppMetrica Instance {
+        get {
+            if (_metrica == null) {
+                lock (syncRoot) {
 #if UNITY_IPHONE || UNITY_IOS
-					if (_metrica == null && Application.platform == RuntimePlatform.IPhonePlayer) {
-						_metrica = new YandexAppMetricaIOS();
-					}
+                    if (_metrica == null && Application.platform == RuntimePlatform.IPhonePlayer) {
+                        _metrica = new YandexAppMetricaIOS ();
+                    }
 #elif UNITY_ANDROID
 					if (_metrica == null && Application.platform == RuntimePlatform.Android) {
 						_metrica = new YandexAppMetricaAndroid();
 					}
 #endif
-					if (_metrica == null) {
-						_metrica = new YandexAppMetricaDummy();
-					}
-				}
-			}
-			return _metrica;
-		}
-	}
+                    if (_metrica == null) {
+                        _metrica = new YandexAppMetricaDummy ();
+                    }
+                }
+            }
+            return _metrica;
+        }
+    }
 
-	void SetupMetrica ()
-	{
-		var configuration = new YandexAppMetricaConfig(APIKey) { 
-			SessionTimeout = (int)SessionTimeoutSec,
-			LoggingEnabled = LoggingEnabled,
-		};
-			
+    void SetupMetrica ()
+    {
+        var configuration = new YandexAppMetricaConfig (ApiKey) {
+            SessionTimeout = (int)SessionTimeoutSec,
+            Logs = Logs,
+            HandleFirstActivationAsUpdate = HandleFirstActivationAsUpdate,
+            StatisticsSending = StatisticsSending,
+        };
+
 #if !APP_METRICA_TRACK_LOCATION_DISABLED
-		configuration.TrackLocationEnabled = TrackLocation;
-		if (TrackLocation) {
-			Input.location.Start ();
-		}
+        configuration.LocationTracking = LocationTracking;
+        if (LocationTracking) {
+            Input.location.Start ();
+        }
+#else
+        configuration.LocationTracking = false;
 #endif
 
-		Instance.ActivateWithConfiguration(configuration);
-	}
+        Instance.ActivateWithConfiguration (configuration);
+        ProcessCrashReports ();
+    }
 
-	private void Awake ()
-	{
-		if (!_isInitialized) {
-			_isInitialized = true;
-			DontDestroyOnLoad(this.gameObject);
-			SetupMetrica();
-		} else {
-			Destroy(this.gameObject);
-		}
-	}
+    private void Awake ()
+    {
+        if (!_isInitialized) {
+            _isInitialized = true;
+            DontDestroyOnLoad (this.gameObject);
+            SetupMetrica ();
+        } else {
+            Destroy (this.gameObject);
+        }
+    }
 
-	private void Start ()
-	{
-		Instance.OnResumeApplication();
-	}
+    private void Start ()
+    {
+        Instance.ResumeSession ();
+    }
 
-	private void OnEnable ()
-	{
-		if (ExceptionsReporting) {
-#if UNITY_5
-			Application.logMessageReceived += HandleLog;
+    private void OnEnable ()
+    {
+        if (ExceptionsReporting) {
+#if UNITY_5 || UNITY_5_3_OR_NEWER
+            Application.logMessageReceived += HandleLog;
 #else
 			Application.RegisterLogCallback(HandleLog);
 #endif
-		}
-	}
-	
-	private void OnDisable ()
-	{
-		if (ExceptionsReporting) {
-#if UNITY_5
-			Application.logMessageReceived -= HandleLog;
+        }
+    }
+
+    private void OnDisable ()
+    {
+        if (ExceptionsReporting) {
+#if UNITY_5 || UNITY_5_3_OR_NEWER
+            Application.logMessageReceived -= HandleLog;
 #else
 			Application.RegisterLogCallback(null);
 #endif
-		}
-	}
+        }
+    }
 
-	void OnApplicationPause(bool pauseStatus)
-	{
-		if (_actualPauseStatus != pauseStatus) {
-			_actualPauseStatus = pauseStatus;
-			if (pauseStatus) {
-				Instance.OnPauseApplication();
-			} else {
-				Instance.OnResumeApplication();
-			}
-		}
-	}
-	
-	void Update()
-	{
-		if (ExceptionsReporting) {
-			if (_handledLogEvents.Count > 0) {
-				var eventsToReport = (ArrayList)_handledLogEvents.Clone();
-				foreach (LogEvent handledLog in eventsToReport) {
-					Instance.ReportError(handledLog.Condition, handledLog.StackTrace);
-					_handledLogEvents.Remove(handledLog);
-				}
-			}
+    private void OnApplicationPause (bool pauseStatus)
+    {
+        if (_actualPauseStatus != pauseStatus) {
+            _actualPauseStatus = pauseStatus;
+            if (pauseStatus) {
+                Instance.PauseSession ();
+            } else {
+                Instance.ResumeSession ();
+            }
+        }
+    }
 
-			var reports = CrashReport.reports;
-			foreach (var report in reports) {
-				Instance.ReportError(report.text, string.Format("Time: {0}", report.time));
-				report.Remove();
-			}
-		}
-	}
-	
-	private void HandleLog(string condition, string stackTrace, LogType type)
-	{
-		if (type == LogType.Exception) {
-			_handledLogEvents.Add(new LogEvent{ Condition = condition, StackTrace = stackTrace });
-		}
-	}
+    public void ProcessCrashReports ()
+    {
+        if (ExceptionsReporting) {
+            var reports = CrashReport.reports;
+            foreach (var report in reports) {
+                var crashLog = string.Format ("Time: {0}\nText: {1}", report.time, report.text);
+                Instance.ReportError ("Crash", crashLog);
+                report.Remove ();
+            }
+        }
+    }
+
+    private void HandleLog (string condition, string stackTrace, LogType type)
+    {
+        if (type == LogType.Exception) {
+            Instance.ReportError (condition, stackTrace);
+        }
+    }
 
 }

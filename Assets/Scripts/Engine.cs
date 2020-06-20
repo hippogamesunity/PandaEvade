@@ -96,7 +96,7 @@ namespace Assets.Scripts
             Profile.Instance.BestScore = Math.Max(score, Profile.Instance.BestScore.Long);
             TweenPosition.Begin(Stage, 0.5f, new Vector3(0, -15, 0));
             UI.OpenResult(score, _continue);
-            AppMetrica.Instance.ReportEvent("Score", new Hashtable { { "Score", score } });
+            AppMetrica.Instance.ReportEvent("Score", new Dictionary<string, object> { { "Score", score } });
         }
 
         public void Abort()
