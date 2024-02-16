@@ -8,7 +8,16 @@
 
 #import <YandexMobileMetrica/YandexMobileMetrica.h>
 #import <CoreLocation/CoreLocation.h>
+#import <dlfcn.h>
 #import "YMMBridge.h"
+
+typedef NS_ENUM(NSInteger, YMMTrackingStatus) {
+    MMSTrackingStatusUnavailable = -1,
+    MMSTrackingStatusNotDetermined = 0,
+    MMSTrackingStatusRestricted,
+    MMSTrackingStatusDenied,
+    MMSTrackingStatusAuthorized
+};
 
 static NSString *const kYMMUnityExceptionName = @"UnityException";
 
@@ -80,7 +89,18 @@ YMMYandexMetricaConfiguration *ymm_configurationFromDictionary(NSDictionary *con
     if (configDictionary[@"StatisticsSending"] != nil) {
         config.statisticsSending = [configDictionary[@"StatisticsSending"] boolValue];
     }
+    if (configDictionary[@"AppForKids"] != nil) {
+        config.appForKids = [configDictionary[@"AppForKids"] boolValue];
+    }
+    if (configDictionary[@"UserProfileID"] != nil) {
+        config.userProfileID = (NSString *)configDictionary[@"UserProfileID"];
+    }
+    if (configDictionary[@"RevenueAutoTrackingEnabled"] != nil) {
+        config.revenueAutoTrackingEnabled = [configDictionary[@"RevenueAutoTrackingEnabled"] boolValue];
+    }
 
+    // Sessions are monitored by plugin itself
+    config.sessionsAutoTracking = NO;
     return config;
 }
 
@@ -94,6 +114,7 @@ void ymm_activateWithConfigurationJSON(char *configurationJSON)
     if (error == nil && ymm_isDictionaryOrNil(configDictionary)) {
         YMMYandexMetricaConfiguration *config = ymm_configurationFromDictionary(configDictionary);
         [YMMYandexMetrica activateWithConfiguration:config];
+        [[YMMYandexMetrica getPluginExtension] handlePluginInitFinished];
         g_ymm_isAppMetricaActivated = true;
     }
     else {
@@ -104,6 +125,81 @@ void ymm_activateWithConfigurationJSON(char *configurationJSON)
 bool ymm_isAppMetricaActivated()
 {
     return g_ymm_isAppMetricaActivated;
+}
+
+void ymm_resumeSession()
+{
+    [YMMYandexMetrica resumeSession];
+}
+
+void ymm_pauseSession()
+{
+    [YMMYandexMetrica pauseSession];
+}
+
+YMMAdType ymm_adTypeFromString(NSString *adType)
+{
+    if (adType == nil) {
+        return nil;
+    }
+    if ([adType isEqualToString:@"Native"]) {
+        return YMMAdTypeNative;
+    }
+    if ([adType isEqualToString:@"Banner"]) {
+        return YMMAdTypeBanner;
+    }
+    if ([adType isEqualToString:@"Rewarded"]) {
+        return YMMAdTypeRewarded;
+    }
+    if ([adType isEqualToString:@"Interstitial"]) {
+        return YMMAdTypeInterstitial;
+    }
+    if ([adType isEqualToString:@"Mrec"]) {
+        return YMMAdTypeMrec;
+    }
+    if ([adType isEqualToString:@"Other"]) {
+        return YMMAdTypeOther;
+    }
+    return YMMAdTypeUnknown;
+}
+
+YMMAdRevenueInfo *ymm_adRevenueFromDictionary(NSDictionary *adRevenueDictionary)
+{
+    if (adRevenueDictionary == nil) {
+        return nil;
+    }
+    NSString *adRevenueMoneyStr = adRevenueDictionary[@"AdRevenue"];
+    NSDictionary *locale = [NSDictionary dictionaryWithObject:@"." forKey:NSLocaleDecimalSeparator];
+    NSDecimalNumber *adRevenueDecimal = [NSDecimalNumber decimalNumberWithString:adRevenueMoneyStr locale:locale];
+    NSString *currency = adRevenueDictionary[@"Currency"];
+    YMMMutableAdRevenueInfo *adRevenue = [[YMMMutableAdRevenueInfo alloc] initWithAdRevenue:adRevenueDecimal currency:currency];
+
+    [adRevenue setAdType:ymm_adTypeFromString(adRevenueDictionary[@"AdType"])];
+    [adRevenue setAdNetwork:adRevenueDictionary[@"AdNetwork"]];
+    [adRevenue setAdUnitID:adRevenueDictionary[@"AdUnitId"]];
+    [adRevenue setAdUnitName:adRevenueDictionary[@"AdUnitName"]];
+    [adRevenue setAdPlacementID:adRevenueDictionary[@"AdPlacementId"]];
+    [adRevenue setAdPlacementName:adRevenueDictionary[@"AdPlacementName"]];
+    [adRevenue setPrecision:adRevenueDictionary[@"Precision"]];
+    [adRevenue setPayload:ymm_dictionaryFromJSONString(adRevenueDictionary[@"Payload"], nil)];
+
+    return adRevenue;
+}
+
+void ymm_reportAdRevenueJSON(char *adRevenueJson)
+{
+    NSString *adRevenueString = ymm_stringFromCString(adRevenueJson);
+
+    NSError *error = nil;
+    NSDictionary *adRevenueDictionary = ymm_dictionaryFromJSONString(adRevenueString, &error);
+
+    if (error == nil && ymm_isDictionaryOrNil(adRevenueDictionary)) {
+        YMMAdRevenueInfo *adRevenue = ymm_adRevenueFromDictionary(adRevenueDictionary);
+        [YMMYandexMetrica reportAdRevenue:adRevenue onFailure:nil];
+    }
+    else {
+        NSLog(@"Invalid ad revenue json %@", adRevenueString);
+    }
 }
 
 void ymm_reportEvent(char *message)
@@ -137,6 +233,160 @@ void ymm_reportError(char *condition, char *stackTrace)
                                                         reason:stackTraceString
                                                       userInfo:nil];
     [YMMYandexMetrica reportError:conditionString exception:exception onFailure:nil];
+}
+
+void ymm_reportErrorWithIdentifier(char *groupIdentifier, char *condition, char *stackTrace)
+{
+    NSString *groupIdentifierString = ymm_stringFromCString(groupIdentifier);
+    NSString *conditionString = ymm_stringFromCString(condition);
+    NSString *stackTraceString = ymm_stringFromCString(stackTrace);
+
+    NSString *message = [NSString stringWithFormat:@"%@\n%@", conditionString, stackTraceString];
+    YMMError *error = [YMMError errorWithIdentifier:groupIdentifierString message:message parameters:nil];
+    [YMMYandexMetrica reportError:error onFailure:nil];
+}
+
+void ymm_reportErrorWithException(char *groupIdentifier, char *condition, char *exceptionJson)
+{
+    NSString *groupIdentifierString = ymm_stringFromCString(groupIdentifier);
+    NSString *conditionString = ymm_stringFromCString(condition);
+    NSError *errorParsing = nil;
+    NSString *exceptionJsonString = ymm_stringFromCString(exceptionJson);
+    NSDictionary *exceptionDictionary = ymm_dictionaryFromJSONString(exceptionJsonString, &errorParsing);
+
+    if (errorParsing == nil && ymm_isDictionaryOrNil(exceptionDictionary)) {
+        NSString *message;
+        if (exceptionDictionary == nil) {
+            message = [NSString stringWithFormat:@"%@", conditionString];
+        }
+        else {
+            message = [NSString stringWithFormat:@"%@\nC# Exception:\n%@: %@\n%@",
+                       conditionString, exceptionDictionary[@"type"], exceptionDictionary[@"message"],
+                       exceptionDictionary[@"stacktrace"]];
+        }
+        YMMError *error = [YMMError errorWithIdentifier:groupIdentifierString message:message parameters:nil];
+        [YMMYandexMetrica reportError:error onFailure:nil];
+    }
+    else {
+        NSLog(@"Invalid exception json for report error to AppMetrica %@", exceptionJsonString);
+    }
+}
+
+YMMStackTraceElement *ymm_stackTraceElementFromJsonDictionary(NSDictionary *dict)
+{
+    if (dict == nil) {
+        return nil;
+    }
+
+    YMMStackTraceElement *stackTraceElement = [[YMMStackTraceElement alloc] init];
+
+    if (dict[@"ClassName"] != nil) {
+        stackTraceElement.className = (NSString *)dict[@"ClassName"];
+    }
+    if (dict[@"MethodName"] != nil) {
+        stackTraceElement.methodName = (NSString *)dict[@"MethodName"];
+    }
+    if (dict[@"FileName"] != nil) {
+        stackTraceElement.fileName = (NSString *)dict[@"FileName"];
+    }
+    if (dict[@"Line"] != nil) {
+        stackTraceElement.line = [[NSNumber alloc] initWithInt:[dict[@"Line"] intValue]];
+    }
+    if (dict[@"Column"] != nil) {
+        stackTraceElement.column = [[NSNumber alloc] initWithInt:[dict[@"Column"] intValue]];
+    }
+
+    return stackTraceElement;
+}
+
+YMMPluginErrorDetails *ymm_errorDetailsFromJsonDictionary(NSDictionary *dict)
+{
+    if (dict == nil) {
+        return nil;
+    }
+
+    YMMPluginErrorDetails *errorDetails = [[YMMPluginErrorDetails alloc] init];
+
+    if (dict[@"ExceptionClass"] != nil) {
+        errorDetails.exceptionClass = (NSString *)dict[@"ExceptionClass"];
+    }
+    if (dict[@"Message"] != nil) {
+        errorDetails.message = (NSString *)dict[@"Message"];
+    }
+    if (dict[@"Stacktrace"] != nil) {
+        NSDictionary *stacktraceItems = dict[@"Stacktrace"];
+        NSMutableArray *backtrace = [[NSMutableArray alloc] init];
+        for (int i = 0; i < stacktraceItems.count; ++i) {
+            NSDictionary *item = stacktraceItems[[@(i) stringValue]];
+            YMMStackTraceElement *stackTraceElement = ymm_stackTraceElementFromJsonDictionary(item);
+            if (stackTraceElement != nil) {
+                [backtrace addObject:stackTraceElement];
+            }
+        }
+
+        errorDetails.backtrace = backtrace;
+    }
+    if (dict[@"Platform"] != nil) {
+        errorDetails.platform = (NSString *)dict[@"Platform"];
+    }
+    if (dict[@"VirtualMachineVersion"] != nil) {
+        errorDetails.virtualMachineVersion = (NSString *)dict[@"VirtualMachineVersion"];
+    }
+    if (dict[@"PluginEnvironment"] != nil) {
+        errorDetails.pluginEnvironment = dict[@"PluginEnvironment"];
+    }
+    return errorDetails;
+}
+
+void ymm_reportUnhandledException(char *errorJson)
+{
+    NSError *errorParsing = nil;
+    NSString *errorJsonString = ymm_stringFromCString(errorJson);
+    NSDictionary *errorDictionary = ymm_dictionaryFromJSONString(errorJsonString, &errorParsing);
+
+    if (errorParsing == nil && ymm_isDictionaryOrNil(errorDictionary) && errorDictionary != nil) {
+        [[YMMYandexMetrica getPluginExtension] reportUnhandledException:ymm_errorDetailsFromJsonDictionary(errorDictionary)
+                                                              onFailure:nil];
+    }
+    else {
+        NSLog(@"Invalid error details json for report error to AppMetrica %@", errorJsonString);
+    }
+}
+
+void ymm_reportErrorWithMessage(char *errorJson, char *message)
+{
+    NSString *messageString = ymm_stringFromCString(message);
+    NSError *errorParsing = nil;
+    NSString *errorJsonString = ymm_stringFromCString(errorJson);
+    NSDictionary *errorDictionary = ymm_dictionaryFromJSONString(errorJsonString, &errorParsing);
+
+    if (errorParsing == nil && ymm_isDictionaryOrNil(errorDictionary) && errorDictionary != nil) {
+        [[YMMYandexMetrica getPluginExtension] reportError:ymm_errorDetailsFromJsonDictionary(errorDictionary)
+                                                   message:messageString
+                                                 onFailure:nil];
+    }
+    else {
+        NSLog(@"Invalid error details json for report error to AppMetrica %@", errorJsonString);
+    }
+}
+
+void ymm_reportErrorWithIdentifierAndMessage(char *groupIdentifier, char *message, char *errorJson)
+{
+    NSString *groupIdentifierString = ymm_stringFromCString(groupIdentifier);
+    NSString *messageString = ymm_stringFromCString(message);
+    NSError *errorParsing = nil;
+    NSString *errorJsonString = ymm_stringFromCString(errorJson);
+    NSDictionary *errorDictionary = ymm_dictionaryFromJSONString(errorJsonString, &errorParsing);
+
+    if (errorParsing == nil && ymm_isDictionaryOrNil(errorDictionary)) {
+        [[YMMYandexMetrica getPluginExtension] reportErrorWithIdentifier:groupIdentifierString
+                                                                 message:messageString
+                                                                 details:ymm_errorDetailsFromJsonDictionary(errorDictionary)
+                                                               onFailure:nil];
+    }
+    else {
+        NSLog(@"Invalid error details json for report error to AppMetrica %@", errorJsonString);
+    }
 }
 
 void ymm_setLocationTracking(bool enabled)
@@ -388,9 +638,18 @@ YMMRevenueInfo *ymm_revenueFromDictionary(NSDictionary *revenueDictionary)
     if (revenueDictionary == nil) {
         return nil;
     }
-    double price = [revenueDictionary[@"Price"] doubleValue];
     NSString *currency = revenueDictionary[@"Currency"];
-    YMMMutableRevenueInfo *revenue = [[YMMMutableRevenueInfo alloc] initWithPrice:price currency:currency];
+    YMMMutableRevenueInfo *revenue = nil;
+    if (revenueDictionary[@"PriceDecimal"] != nil) {
+        NSString *priceDecimalString = revenueDictionary[@"PriceDecimal"];
+        NSDictionary *locale = [NSDictionary dictionaryWithObject:@"." forKey:NSLocaleDecimalSeparator];
+        NSDecimalNumber *priceDecimal = [NSDecimalNumber decimalNumberWithString:priceDecimalString locale:locale];
+        revenue = [[YMMMutableRevenueInfo alloc] initWithPriceDecimal:priceDecimal currency:currency];
+    }
+    else {
+        double price = [revenueDictionary[@"Price"] doubleValue];
+        revenue = [[YMMMutableRevenueInfo alloc] initWithPrice:price currency:currency];
+    }
 
     if (revenueDictionary[@"Quantity"] != nil) {
         [revenue setQuantity:[revenueDictionary[@"Quantity"] unsignedIntegerValue]];
@@ -453,4 +712,38 @@ void ymm_requestAppMetricaDeviceID(YMMRequestDeviceIDCallbackDelegate callbackDe
             callbackDelegate(actionPtr, [appMetricaDeviceID UTF8String], ymm_stringFromRequestDeviceIDError(error));
         }
     }];
+}
+
+void ymm_reportReferralUrl(char *referralUrl)
+{
+    NSString *referralUrlString = ymm_stringFromCString(referralUrl);
+    [YMMYandexMetrica reportReferralUrl:[NSURL URLWithString:referralUrlString]];
+}
+
+void ymm_reportAppOpen(char *deeplink)
+{
+    NSString *deeplinkString = ymm_stringFromCString(deeplink);
+    [YMMYandexMetrica handleOpenURL:[NSURL URLWithString:deeplinkString]];
+}
+
+void ymm_putErrorEnvironmentValue(char *key, char *value)
+{
+    [YMMYandexMetrica setErrorEnvironmentValue:ymm_stringFromCString(value) forKey:ymm_stringFromCString(key)];
+}
+
+void ymm_requestTrackingAuthorization(YMMRequestTrackingAuthorization callbackDelegate, YMMAction actionPtr)
+{
+    if (@available(iOS 14, *)) {
+        void *handle = dlopen("AppTrackingTransparency.framework/AppTrackingTransparency", RTLD_LAZY);
+        if (handle != NULL) {
+            Class gMMSTrackingManager = NSClassFromString(@"ATTrackingManager");
+            if ([gMMSTrackingManager respondsToSelector:@selector(requestTrackingAuthorizationWithCompletionHandler:)]) {
+                [gMMSTrackingManager performSelector:@selector(requestTrackingAuthorizationWithCompletionHandler:) withObject:^(YMMTrackingStatus status) {
+                    if (callbackDelegate != nil) {
+                        callbackDelegate(actionPtr, status);
+                    }
+                }];
+            }
+        }
+    }
 }

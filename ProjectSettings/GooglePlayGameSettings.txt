@@ -1,5 +1,5 @@
-lastUpgrade=01009
-proj.pluginVersion=0.10.09
+lastUpgrade=01014
+proj.pluginVersion=0.10.14
 proj.AppId=94671727367
 and.BundleId=com.ZenBen
 proj.classDir=Assets%2fScripts

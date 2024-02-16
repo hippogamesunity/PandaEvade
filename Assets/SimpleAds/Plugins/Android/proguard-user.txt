@@ -1,0 +1,15 @@
+-dontobfuscate
+
+# GameServices
+-keep class com.google.android.gms.** { *; }
+-keep class com.google.games.bridge.** { *; }
+
+# AdMob
+-keep class com.google.unity.** { *; }
+-keep class com.google.android.ump.** { *; }
+
+# Iron Source
+-keep class com.ironsource.** { *; }
+
+# Vungle
+-keep class com.vungle.** { *; }

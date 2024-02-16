@@ -1,9 +1,13 @@
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Xx]code/
+library/
+temp/
+bin/
+obj/
+xcode/
+builds/
+logs/
+.vs/
+.gradle/
+*/UserSettings/
 
 *.csproj
 *.unityproj
@@ -12,3 +16,12 @@
 *.user
 *.userprefs
 *.booproj
+*.DS_Store
+
+ffmpeg.exe
+
+!SimpleGif/**/*.sln
+!SimpleGif/**/*.csproj
+
+!AssetStoreCalculator/**/*.sln
+!AssetStoreCalculator/**/*.csproj

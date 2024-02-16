@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Common;
+using Assets.SimpleAds;
 using UnityEngine;
 using UnityEngine.Advertisements;
 
@@ -85,7 +86,7 @@ namespace Assets.Scripts
                 panel.Hide();
             }
 
-            if (Advertisement.IsReady() && !continued)
+            if (AdManager.Instance.IsReadyRewarded() && !continued)
             {
                 ContinuePanel.Show();
             }
@@ -130,20 +131,10 @@ namespace Assets.Scripts
 
             TaskScheduler.CreateTask(() =>
             {
-                Advertisement.Show("rewardedVideo", new ShowOptions
+                AdManager.Instance.ShowRewarded(() =>
                 {
-                    resultCallback = result =>
-                    {
-                        if (result == ShowResult.Finished)
-                        {
-                            TaskScheduler.CreateTask(Engine.Continue, Id, 1);
-                            AppMetrica.Instance.ReportEvent("AdWatch");
-                        }
-                        else
-                        {
-                            TaskScheduler.CreateTask(ContinuePanel.Show, Id, 1);
-                        }
-                    }
+                    TaskScheduler.CreateTask(Engine.Continue, Id, 1);
+                    AppMetrica.Instance.ReportEvent("AdWatch");
                 });
             }, Id, 1);
         }

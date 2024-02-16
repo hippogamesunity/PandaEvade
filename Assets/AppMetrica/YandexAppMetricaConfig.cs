@@ -6,19 +6,27 @@
  * https://yandex.com/legal/appmetrica_sdk_agreement/
  */
 
-using UnityEngine;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 
-[System.Serializable]
+[Serializable]
 public struct YandexAppMetricaConfig
 {
-    [System.Serializable]
-    public struct Coordinates
+    public YandexAppMetricaConfig(string apiKey) : this()
     {
-        public double Latitude { get; set; }
-
-        public double Longitude { get; set; }
+        ApiKey = apiKey;
+        AppVersion = null;
+        Location = null;
+        SessionTimeout = null;
+        CrashReporting = null;
+        LocationTracking = null;
+        Logs = null;
+        HandleFirstActivationAsUpdate = null;
+        PreloadInfo = null;
+        StatisticsSending = null;
+        AppForKids = null;
+        UserProfileID = null;
+        RevenueAutoTrackingEnabled = null;
     }
 
     public string ApiKey { get; private set; }
@@ -35,40 +43,40 @@ public struct YandexAppMetricaConfig
 
     public bool? Logs { get; set; }
 
-    public bool? InstalledAppCollecting { get; set; }
-
     public bool? HandleFirstActivationAsUpdate { get; set; }
 
     public YandexAppMetricaPreloadInfo? PreloadInfo { get; set; }
 
     public bool? StatisticsSending { get; set; }
 
-    public YandexAppMetricaConfig (string apiKey)
+    /// <summary>
+    ///     Only iOS
+    /// </summary>
+    public bool? AppForKids { get; set; }
+
+    public string UserProfileID { get; set; }
+
+    public bool? RevenueAutoTrackingEnabled { get; set; }
+
+    [Serializable]
+    public struct Coordinates
     {
-        ApiKey = apiKey;
-        AppVersion = null;
-        Location = null;
-        SessionTimeout = null;
-        CrashReporting = null;
-        LocationTracking = null;
-        Logs = null;
-        InstalledAppCollecting = null;
-        HandleFirstActivationAsUpdate = null;
-        PreloadInfo = null;
-        StatisticsSending = null;
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
     }
 }
 
-[System.Serializable]
+[Serializable]
 public struct YandexAppMetricaPreloadInfo
 {
+    public YandexAppMetricaPreloadInfo(string trackingId) : this()
+    {
+        TrackingId = trackingId;
+        AdditionalInfo = new Dictionary<string, string>();
+    }
+
     public string TrackingId { get; private set; }
 
     public Dictionary<string, string> AdditionalInfo { get; private set; }
-
-    public YandexAppMetricaPreloadInfo (string trackingId)
-    {
-        TrackingId = trackingId;
-        AdditionalInfo = new Dictionary<string, string> ();
-    }
 }
